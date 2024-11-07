@@ -1,0 +1,90 @@
+<body>
+    <!-- Sidenav -->
+    <%- include('../partials/sidebar') -%>
+    <!-- Main content -->
+    <div class="main-content">
+      <!-- Top navbar -->
+      <%- include('../partials/navbar') -%>
+      <!-- Header -->
+      <%- include('../partials/header') -%>
+      <!-- Page content -->
+      <div class="container-fluid mt--7">
+        <!-- Table -->
+        <div class="row">
+          <div class="col">
+            <div class="card shadow">
+              <div class="card-header border-0">
+                <h3 class="mb-0">Upload Excel File</h3>
+              </div>
+              <div class="table-responsive px-3">
+                <a href="/public/template.xlsx" download>
+                  <button class="btn btn-icon btn-primary" type="button">
+                    <span class="btn-inner--icon"><i class="ni ni-cloud-download-95"></i></span>
+                      <span class="btn-inner--text">Download Template Excel</span>
+                  </button>
+                </a>
+                <form action="/admin/uploadExcel" method="POST" enctype="multipart/form-data">
+                  <div class="form-group py-3">
+                      <label for="file" class="form-control-label">Select Excel file:</label>
+                      <div class="custom-file">
+                          <input type="file" class="custom-file-input" name="file" id="file" accept=".xlsx, .xls" required>
+                          <label class="custom-file-label" for="file">Choose file...</label>
+                      </div>
+                      <button class="btn btn-icon btn-primary mt-3" type="submit">
+                        <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
+                        <span class="btn-inner--text">Upload</span>
+                      </button>
+                  </div>
+              
+                  
+                </form>
+                <% if (data.length === 0 && uploadState) { %>
+                  <div class="table-responsive px-3">
+                    <label class="form-control-label" style="color:orange">Names may be repeated or data may be empty.</label>
+                  </div>
+                <% } %>
+                <% if (data.length > 0) { %>
+                <div class="table-responsive px-3">
+                  <label class="form-control-label" style="color:green">The following new contents have been added:</label>
+                  <table class="table align-items-center table-flush" id="datatable">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Description</th>
+                        <!-- <th scope="col">Grade</th> -->
+                      </tr>
+                    </thead>
+                    <tbody id="mytbody">
+                      <% data.forEach((item, index) => { %>
+                        <tr>
+                            <td><%= (index+1) %></td>
+                            <td><%= item.name %></td>
+                            <td><%= item.description %></td>
+                            <!-- <td style="color: <%= item.grade === 0 ? 'red' : 'yellow' %>;">
+                              <%= item.grade === 0 ? 'Red' : 'Yellow' %>
+                            </td> -->
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Include scripts -->
+    <%- include('../partials/scripts') -%>
+    <script>
+      document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+          const fileName = e.target.files[0].name;
+          const nextSibling = e.target.nextElementSibling;
+          nextSibling.innerText = fileName;
+      });
+    </script>
+  </body>
+  

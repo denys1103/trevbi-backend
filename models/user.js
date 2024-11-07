@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  role: {
+    type: Number,
+    default: 0,
+  },
   login_status: {
     type: Number,
     default: 0,

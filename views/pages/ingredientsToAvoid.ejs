@@ -1,0 +1,86 @@
+<body>
+    <!-- Sidenav -->
+    <%- include('../partials/sidebar') -%>
+    <!-- Main content -->
+    <div class="main-content">
+      <!-- Top navbar -->
+      <%- include('../partials/navbar') -%>
+      <!-- Header -->
+      <%- include('../partials/header') -%>
+      <!-- Page content -->
+      <div class="container-fluid mt--7">
+        <!-- Table -->
+        <div class="row">
+          <div class="col">
+            <div class="card shadow">
+              <div class="card-header border-0">
+                <h3 class="mb-0">Ingredients To Avoid</h3>
+              </div>
+              <div class="table-responsive px-3">
+                <table class="table align-items-center table-flush" id="datatable">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">No</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Description</th>
+                      <!-- <th scope="col">Grade</th>
+                      <th scope="col">Source</th> -->
+                    </tr>
+                  </thead>
+                  <tbody id="mytbody">
+                    
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  
+    <!-- Include scripts -->
+    <%- include('../partials/scripts') -%>
+    <script>
+      var datatable = $('#datatable').DataTable({
+        "pageLength": 10,
+        "lengthMenu": [10, 25, 50, 100],
+        "ordering": true,
+        "columnDefs": [
+          { "orderable": false, "targets": [] }
+        ]
+      });
+      const reloadData = () => {
+        $.ajax({
+          url:'/admin/getIngredientsToAvoid',
+          type: "POST",
+          data: {ok:true},
+          dataType: 'json',
+          beforeSend: function(){
+          },
+          success:function(res){
+            if(res.success){
+              var data = JSON.parse(res.data);
+              var html = '';
+              $.each(data, function( index, item ) {
+                html += '<tr>';
+                html += '<td>'+(index+1)+'</td>';
+                html += '<td>'+item.name+'</td>';
+                html += '<td>'+item.description+'</td>';
+                // html += '<td style="color:'+(item.grade==0?'red':'yellow')+'">'+(item.grade==0?'red':'yellow')+'</td>';
+                // html += '<td>'+(item.source?item.source:'')+'</td>';
+                html += '</tr>';
+              });
+              datatable.clear();
+              datatable.rows.add($(html)).draw();
+            }
+          }
+        })
+      }
+  
+      $(document).ready(function() {
+        reloadData();
+      });
+    </script>
+  </body>
+  

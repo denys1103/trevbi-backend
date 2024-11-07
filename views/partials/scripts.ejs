@@ -1,0 +1,27 @@
+<!-- Argon Scripts -->
+<!-- Core -->
+<script src="../public/vendor/jquery/dist/jquery.min.js"></script>
+<script src="../public/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Optional JS -->
+<script src="../public/vendor/chart.js/dist/Chart.min.js"></script>
+<script src="../public/vendor/chart.js/dist/Chart.extension.js"></script>
+<!-- Include jQuery and DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<!-- Argon JS -->
+<script src="../public/js/argon.min.js?v=1.0.0"></script>
+<script>
+  const site_logout = () => {
+    $.ajax({
+      url:'/admin/logout',
+      type: "POST",
+      data: {token: $('#token').val()},
+      dataType: 'json',
+      beforeSend: function(){
+      },
+      success:function(res){
+        console.log(res);
+        window.location.href = "/admin/login";
+      }
+    })
+  }
+</script>

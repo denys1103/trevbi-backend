@@ -124,8 +124,8 @@ exports.forgotPassword = async (req, res) => {
 	console.log(code, md5_code);
     const msg = {
       to: email,
-      from: `info@crewfie.com`,
-      subject: `Request of authorization from Crewfieapp`,
+      from: `info@cleanlabel.com`,
+      subject: `Request of authorization from CleanLabelApp`,
       html: 'verification code:<b>'+code+'</b>',
     };
 
