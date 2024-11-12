@@ -11,6 +11,10 @@ var logger = require('morgan');
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
 console.log(process.env.APP_NAME);
+//gemini
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 var app = express();
 
@@ -43,6 +47,12 @@ app.use((req, res, next) => {
 });
 
 app.use('/admin', adminRouter);
+//gemini test
+app.get('/gemini', async (req, res) => {
+  const prompt = `Please correct the spelling errors in the following text:"Ths is smple txt with sm misspelling."`;
+  const result = await model.generateContent([prompt]);
+  console.log('gemini result:', JSON.stringify(result, null, 2));
+});
 app.get('/', (req, res) => {
   res.render('pages/welcome');
 });
