@@ -168,10 +168,10 @@ exports.getIngredientsToAvoid = async (req, res) => {
 };
 
 async function correctSpellingBatch(words) {
-  const prompt = `Please correct the spelling errors in the following words and return only result: ${words.join(', ')}`;
+  const prompt = `Please correct the spelling errors in the following words and return only result: ${words.join(' || ')}`;
   const result = await model.generateContent([prompt]);
   console.log('gemini result:', JSON.stringify(result, null, 2));
-  const correctedWords = result.response.candidates.content.parts.text.split(', ').map(word => word.trim());
+  const correctedWords = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
   return correctedWords;
 }
 
@@ -193,15 +193,48 @@ exports.geminiTest = async (req, res) => {
 exports.getAvoidData = async (req, res) => {
   const { IngredientsList } = req.body;
   // console.log('ingredientsList:', IngredientsList);
-  const correctedArray = await correctSpellingBatch(IngredientsList);
-  console.log('correctedArray result:', JSON.stringify(correctedArray, null, 2));
+  let TempIngredients = IngredientsList;
+  try {
+    if(IngredientsList.length > 0) {
+      const correctedArray = await correctSpellingBatch(IngredientsList);
+      TempIngredients = correctedArray;
+    }
+    console.log('try catch:', JSON.stringify(correctedArray, null, 2));
+  } catch (error) {
+    console.log('gemini api error:', error);
+  } finally {
+    console.log('correctedArray result:', JSON.stringify(TempIngredients, null, 2));
 
-  const results = await ingredientsToAvoid.find({
-    name: { $in: IngredientsList.map(item => new RegExp(`^${item}$`, 'i')) }
-  })
-  .limit(10);
+    const results = await ingredientsToAvoid.find({
+      name: { $in: TempIngredients.map(item => new RegExp(`^${item}$`, 'i')) }
+    })
+    .limit(10);
+  
+    res.json({ success: true, results });
+  }
+};
 
-  res.json({ success: true, results });
+exports.getCorrectWords = async (req, res) => {
+  const { ocrWords } = req.body;
+  let TempIngredients = ocrWords;
+  try {
+    if(ocrWords.length > 0) {
+      const correctedArray = await correctSpellingBatch(ocrWords);
+      TempIngredients = correctedArray;
+    }
+    console.log('try catch:', JSON.stringify(correctedArray, null, 2));
+  } catch (error) {
+    console.log('gemini api error:', error);
+  } finally {
+    console.log('corrected words result:', JSON.stringify(TempIngredients, null, 2));
+
+    // const results = await ingredientsToAvoid.find({
+    //   name: { $in: TempIngredients.map(item => new RegExp(`^${item}$`, 'i')) }
+    // })
+    // .limit(10);
+  
+    res.json({ success: true, results:TempIngredients });
+  }
 };
 
 exports.signOut = async (req, res) => {
