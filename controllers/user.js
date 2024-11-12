@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const HistoryActiveUser = require('../models/historyActiveUser');
 const ingredientsToAvoid = require('../models/ingredientsToAvoid');
+//gemini
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 exports.createUser = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -163,9 +167,34 @@ exports.getIngredientsToAvoid = async (req, res) => {
   res.json({ success: true, ingredientsList });
 };
 
+async function correctSpellingBatch(words) {
+  const prompt = `Please correct the spelling errors in the following words: ${words.join(', ')}`;
+  const result = await model.generateContent([prompt]);
+  console.log('gemini result:', JSON.stringify(result, null, 2));
+  const correctedWords = result.text.split(', ').map(word => word.trim());
+  return correctedWords;
+}
+
+exports.geminiTest = async (req, res) => {
+  // const { IngredientsList } = req.body;
+  const array = ['Ths is', 'is', 'smple txt', 'txt', 'anothe', 'wrng', 'wrd'];
+  // console.log('ingredientsList:', IngredientsList);
+  const correctedArray = await correctSpellingBatch(array);
+  console.log('correctedArray result:', JSON.stringify(correctedArray, null, 2));
+
+  // const results = await ingredientsToAvoid.find({
+  //   name: { $in: IngredientsList.map(item => new RegExp(`^${item}$`, 'i')) }
+  // })
+  // .limit(10);
+
+  res.json({ success: true, correctedArray });
+};
+
 exports.getAvoidData = async (req, res) => {
   const { IngredientsList } = req.body;
   // console.log('ingredientsList:', IngredientsList);
+  const correctedArray = await correctSpellingBatch(IngredientsList);
+  console.log('correctedArray result:', JSON.stringify(correctedArray, null, 2));
 
   const results = await ingredientsToAvoid.find({
     name: { $in: IngredientsList.map(item => new RegExp(`^${item}$`, 'i')) }
