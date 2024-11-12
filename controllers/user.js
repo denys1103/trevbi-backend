@@ -222,11 +222,11 @@ exports.getCorrectWords = async (req, res) => {
       const correctedArray = await correctSpellingBatch(ocrWords);
       TempIngredients = correctedArray;
     }
-    console.log('try catch:', JSON.stringify(correctedArray, null, 2));
+    // console.log('try catch:', JSON.stringify(correctedArray, null, 2));
   } catch (error) {
     console.log('gemini api error:', error);
   } finally {
-    console.log('corrected words result:', JSON.stringify(TempIngredients, null, 2));
+    // console.log('corrected words result:', JSON.stringify(TempIngredients, null, 2));
 
     // const results = await ingredientsToAvoid.find({
     //   name: { $in: TempIngredients.map(item => new RegExp(`^${item}$`, 'i')) }
