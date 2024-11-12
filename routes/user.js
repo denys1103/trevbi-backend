@@ -22,7 +22,7 @@ router.post('/sign-in', validateUserSignIn, userVlidation, userSignIn);
 router.post('/forgot-password', validateUserSignIn, userVlidation, forgotPassword);
 router.get('/getIngredientsToAvoid', getIngredientsToAvoid);
 router.post('/getAvoidData', getAvoidData);
-router.post('/geminiTest', geminiTest);
+router.get('/geminiTest', geminiTest);
 router.post('/sign-out', isAuth, signOut);
 
 module.exports = router;
