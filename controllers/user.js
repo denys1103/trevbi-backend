@@ -168,10 +168,10 @@ exports.getIngredientsToAvoid = async (req, res) => {
 };
 
 async function correctSpellingBatch(words) {
-  const prompt = `Please correct the spelling errors in the following words: ${words.join(', ')}`;
+  const prompt = `Please correct the spelling errors in the following words and return only result: ${words.join(', ')}`;
   const result = await model.generateContent([prompt]);
   console.log('gemini result:', JSON.stringify(result, null, 2));
-  const correctedWords = result.text.split(', ').map(word => word.trim());
+  const correctedWords = result.response.candidates.content.parts.text.split(', ').map(word => word.trim());
   return correctedWords;
 }
 
