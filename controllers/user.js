@@ -180,6 +180,10 @@ exports.geminiTest = async (req, res) => {
   res.json({ success: true, correctedArray });
 };
 
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 exports.getAvoidData = async (req, res) => {
   const { IngredientsList } = req.body;
   let TempIngredients = IngredientsList;
@@ -193,7 +197,11 @@ exports.getAvoidData = async (req, res) => {
   } finally {
     console.log('correctedArray result:', JSON.stringify(TempIngredients, null, 2));
     const results = await ingredientsToAvoid.find({
-      name: { $in: TempIngredients.map(item => new RegExp(`^${item}$`, 'i')) }
+      name: {
+          $in: TempIngredients
+          .filter(item => item.trim() !== "")
+          .map(item => new RegExp(`^${escapeRegExp(item)}$`, 'i'))
+      }
     })
     .limit(10);
   
