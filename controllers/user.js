@@ -187,9 +187,13 @@ function escapeRegExp(string) {
 exports.getAvoidData = async (req, res) => {
   const { IngredientsList } = req.body;
   let TempIngredients = IngredientsList;
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, '0');
+  console.log('date:', day, IngredientsList.length);
   try {
     if(IngredientsList.length > 0) {
       const correctedArray = await correctSpellingBatch(IngredientsList);
+      console.log('correctedArray length using gemini api:', correctedArray.length);
       TempIngredients = correctedArray;
     }
   } catch (error) {
