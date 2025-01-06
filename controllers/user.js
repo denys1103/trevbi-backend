@@ -168,8 +168,11 @@ exports.getIngredientsToAvoid = async (req, res) => {
 };
 
 async function correctSpellingBatch(words) {
+  console.log('words:', JSON.stringify(words, null, 2))
   const prompt = `Please correct the spelling errors in the following words, translate them to English and return only the results: ${words.join(' || ')}`;
   const result = await model.generateContent([prompt]);
+  console.log('prompt:', prompt)
+  console.log('correctSpellingBatch:', result.response.candidates[0].content.parts[0].text)
   const correctedWords = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
   return correctedWords;
 }
@@ -225,7 +228,6 @@ exports.getCorrectWords = async (req, res) => {
   } catch (error) {
     console.log('gemini api error:', error);
   } finally {
-    console.log('getCorrectWords result:', JSON.stringify(TempIngredients, null, 2));
     res.json({ success: true, results:TempIngredients });
   }
 };
