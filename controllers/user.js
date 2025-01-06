@@ -220,10 +220,12 @@ exports.getCorrectWords = async (req, res) => {
     if(ocrWords.length > 0) {
       const correctedArray = await correctSpellingBatch(ocrWords);
       TempIngredients = correctedArray;
+      console.log('getCorrectWords length using gemini api:', TempIngredients.length);
     }
   } catch (error) {
     console.log('gemini api error:', error);
   } finally {
+    console.log('getCorrectWords result:', JSON.stringify(TempIngredients, null, 2));
     res.json({ success: true, results:TempIngredients });
   }
 };
