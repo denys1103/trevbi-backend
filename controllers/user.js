@@ -169,7 +169,7 @@ exports.getIngredientsToAvoid = async (req, res) => {
 
 async function correctSpellingBatch(words) {
   console.log('words:', JSON.stringify(words, null, 2))
-  const prompt = `In the following text, correct spelling errors in words, leave special characters intact, translate the words into English, and return only the results: ${words.join(' || ')}`;
+  const prompt = `Please correct the spelling errors in the following words and return only the results: ${words.join(' || ')}`;
   const result = await model.generateContent([prompt]);
   console.log('prompt:', prompt)
   console.log('correctSpellingBatch:', result.response.candidates[0].content.parts[0].text)
