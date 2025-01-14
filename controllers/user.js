@@ -192,7 +192,9 @@ exports.getAvoidData = async (req, res) => {
   let TempIngredients = IngredientsList;
   const date = new Date();
   const day = String(date.getDate()).padStart(2, '0');
-  console.log('date:', day, IngredientsList.length);
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  console.log(`Date: ${day} - ${hour}:${minute}`, IngredientsList.length);
   try {
     if(IngredientsList.length > 0) {
       const correctedArray = await correctSpellingBatch(IngredientsList);
@@ -210,7 +212,7 @@ exports.getAvoidData = async (req, res) => {
           .map(item => new RegExp(`^${escapeRegExp(item)}$`, 'i'))
       }
     })
-    .limit(10);
+    .limit(15);
   
     res.json({ success: true, results });
   }
