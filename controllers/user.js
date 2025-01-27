@@ -219,7 +219,8 @@ exports.getAvoidData = async (req, res) => {
 };
 
 async function correctSpellingIngredients(ingredientsText) {
-  const prompt = `In the following text, translate the words into English, and return only ingredients result(includes ingredients in parentheses).(Return example format: ingredient || ingredient || ingredient): ${ingredientsText}`;
+  const prompt = `In the following text, translate the words into English, and return only ingredients result(includes ingredients in parentheses). If the text is "Artificial color (including F.D.&.C. Yellow No.5, F.D.&.C. Red No.3), Contains 2% Or Less Of Vegetable Oil (Hydrogenated Coconut, Soybean And/or Cottonseed)", Return example: Artificial color || Yellow No.5 || 
+Red No.3 || Vegetable Oil || Hydrogenated Coconut || Soybean || Cottonseed: ${ingredientsText}`;
   const result = await model.generateContent([prompt]);
   console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
   const correctedWords = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
