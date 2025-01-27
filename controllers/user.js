@@ -218,6 +218,45 @@ exports.getAvoidData = async (req, res) => {
   }
 };
 
+async function correctSpellingIngredients(ingredientsText) {
+  const prompt = `In the following text, translate the words into English, and return only ingredients result(example: ingredient || ingredient || ingredient): ${ingredientsText}`;
+  const result = await model.generateContent([prompt]);
+  console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
+  const correctedWords = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
+  return correctedWords;
+}
+
+exports.getAvoidListData = async (req, res) => {
+  const { IngredientsList } = req.body;
+  let TempIngredients = [];
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  console.log(`Date: ${day} - ${hour}:${minute}`, IngredientsList.length);
+  try {
+    if(IngredientsList.length > 0) {
+      const correctedArray = await correctSpellingIngredients(IngredientsList);
+      console.log('correctedArray length using gemini api(get avoid list api):', correctedArray.length);
+      TempIngredients = correctedArray;
+    }
+  } catch (error) {
+    console.log('gemini api error:', error);
+  } finally {
+    console.log('correctedArray result(get avoid list api):', JSON.stringify(TempIngredients, null, 2));
+    const results = await ingredientsToAvoid.find({
+      name: {
+          $in: TempIngredients
+          .filter(item => item.trim() !== "")
+          .map(item => new RegExp(`^${escapeRegExp(item)}$`, 'i'))
+      }
+    })
+    .limit(15);
+  
+    res.json({ success: true, results });
+  }
+};
+
 exports.getCorrectWords = async (req, res) => {
   const { ocrWords } = req.body;
   let TempIngredients = ocrWords;
