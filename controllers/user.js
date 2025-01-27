@@ -219,7 +219,7 @@ exports.getAvoidData = async (req, res) => {
 };
 
 async function correctSpellingIngredients(ingredientsText) {
-  const prompt = `In the following text, translate the words into English, and return only ingredients result(example: ingredient || ingredient || ingredient): ${ingredientsText}`;
+  const prompt = `In the following text, translate the words into English, Includes ingredients in parentheses, and return only ingredients result(example: ingredient || ingredient || ingredient): ${ingredientsText}`;
   const result = await model.generateContent([prompt]);
   console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
   const correctedWords = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
