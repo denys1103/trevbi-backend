@@ -8,6 +8,7 @@ const {
   getIngredientsToAvoid,
   getAvoidData,
   getAvoidListData,
+  getAskAi,
   getCorrectWords,
   geminiTest,
   signOut,
@@ -25,6 +26,7 @@ router.post('/forgot-password', validateUserSignIn, userVlidation, forgotPasswor
 router.get('/getIngredientsToAvoid', getIngredientsToAvoid);
 router.post('/getAvoidData', getAvoidData);
 router.post('/getAvoidListData', getAvoidListData);
+router.post('/getAskAi', getAskAi);
 router.post('/getCorrectWords', getCorrectWords);
 router.get('/geminiTest', geminiTest);
 router.post('/sign-out', isAuth, signOut);

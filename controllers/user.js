@@ -257,6 +257,30 @@ exports.getAvoidListData = async (req, res) => {
   }
 };
 
+async function askAI(words) {
+  const prompt = `${words}\n Please recommend an article of less than 100 words that presents an alternative to a better options.`;
+  const result = await model.generateContent([prompt]);
+  const answerAticle = result.response.candidates[0].content.parts[0].text;
+  return answerAticle;
+}
+
+exports.getAskAi = async (req, res) => {
+  const { modalData } = req.body;
+  const askText = `${modalData.name}\n${modalData.description}`
+  let TempAnswer = askText;
+  try {
+    if(askText.length > 0) {
+      const answer = await askAI(askText);
+      TempAnswer = answer;
+      console.log('TempAnswer length using gemini api:', TempAnswer.length);
+    }
+  } catch (error) {
+    console.log('gemini api error:', error);
+  } finally {
+    res.json({ success: true, results:TempAnswer });
+  }
+};
+
 exports.getCorrectWords = async (req, res) => {
   const { ocrWords } = req.body;
   let TempIngredients = ocrWords;
