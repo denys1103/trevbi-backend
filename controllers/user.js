@@ -243,7 +243,7 @@ exports.getAvoidListData = async (req, res) => {
   } catch (error) {
     console.log('gemini api error:', error);
   } finally {
-    console.log('correctedArray result(get avoid list api):', JSON.stringify(TempIngredients, null, 2));
+    // console.log('correctedArray result(get avoid list api):', JSON.stringify(TempIngredients, null, 2));
     const results = await ingredientsToAvoid.find({
       name: {
           $in: TempIngredients
