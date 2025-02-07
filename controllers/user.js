@@ -221,7 +221,7 @@ exports.getAvoidData = async (req, res) => {
 async function correctSpellingIngredients(ingredientsText) {
   const prompt = `In the following text, translate the words into English, and return only result(includes ingredients in parentheses). Only return the ingredients separated by "||" and if there are no ingredients, return words separated by "||". If the example text is "Artificial color (including F.D.&.C. Yellow No.5, F.D.&.C. Red No.3), Contains 2% Or Less Of Vegetable Oil (Hydrogenated Coconut, Soybean And/or Cottonseed)", Return example is "Artificial color || Yellow No.5 || Red No.3 || Vegetable Oil || Hydrogenated Coconut || Soybean || Cottonseed".\nThe text is: ${ingredientsText}`;
   const result = await model.generateContent([prompt]);
-  console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
+  // console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
   const correctedWords = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
   return correctedWords;
 }
@@ -243,7 +243,7 @@ exports.getAvoidListData = async (req, res) => {
   } catch (error) {
     console.log('gemini api error:', error);
   } finally {
-    // console.log('correctedArray result(get avoid list api):', JSON.stringify(TempIngredients, null, 2));
+    console.log('correctedArray result(get avoid list api):', JSON.stringify(TempIngredients, null, 2));
     const results = await ingredientsToAvoid.find({
       name: {
           $in: TempIngredients
