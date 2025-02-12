@@ -9,6 +9,7 @@ const {
   getAvoidData,
   getAvoidListData,
   getAskAi,
+  getBarcodeAi,
   getCorrectWords,
   geminiTest,
   sendEmailTest,
@@ -28,6 +29,7 @@ router.get('/getIngredientsToAvoid', getIngredientsToAvoid);
 router.post('/getAvoidData', getAvoidData);
 router.post('/getAvoidListData', getAvoidListData);
 router.post('/getAskAi', getAskAi);
+router.post('/getBarcodeAi', getBarcodeAi);
 router.post('/getCorrectWords', getCorrectWords);
 router.get('/geminiTest', geminiTest);
 router.get('/sendEmailTest', sendEmailTest);

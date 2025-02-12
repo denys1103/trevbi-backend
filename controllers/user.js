@@ -284,6 +284,30 @@ exports.getAskAi = async (req, res) => {
   }
 };
 
+async function barcodeAI(words) {
+  const prompt = `${words}\n Please recommend product barcode list that presents an alternative to a better options, and return only result.(example: barcode || barcode || barcode)`;
+  const result = await model.generateContent([prompt]);
+  const barcodeList = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
+  return barcodeList;
+}
+
+exports.getBarcodeAi = async (req, res) => {
+  const { modalData } = req.body;
+  const askText = `${modalData.name}\n${modalData.description}`
+  let TempAnswer = [];
+  try {
+    if(askText.length > 0) {
+      const answer = await barcodeAI(askText);
+      TempAnswer = answer;
+      console.log('Barcode TempAnswer length using gemini api:', TempAnswer.length);
+    }
+  } catch (error) {
+    console.log('gemini api error:', error);
+  } finally {
+    res.json({ success: true, results:TempAnswer });
+  }
+};
+
 exports.getCorrectWords = async (req, res) => {
   const { ocrWords } = req.body;
   let TempIngredients = ocrWords;
