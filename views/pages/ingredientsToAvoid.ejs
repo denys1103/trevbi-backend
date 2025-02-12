@@ -74,6 +74,14 @@
                               </div>
                           </div>
                         </div>
+                        <div class="col-sm-12 row">
+                          <label class="col-md-3 col-form-label">Source</label>
+                          <div class="col-md-5">
+                              <div class="form-group bmd-form-group is-filled">
+                                  <input class="form-control" id="source" name="source" type="text" placeholder="source" value="">
+                              </div>
+                          </div>
+                        </div>
                       </div>
                   </div>
                 </div>
@@ -117,7 +125,7 @@
                 html += '<td>'+item.name+'</td>';
                 html += '<td>'+item.description+'</td>';
                 // html += '<td style="color:'+(item.grade==0?'red':'yellow')+'">'+(item.grade==0?'red':'yellow')+'</td>';
-                // html += '<td>'+(item.source?item.source:'')+'</td>';
+                html += '<td>'+(item.source?item.source:'')+'</td>';
                 html += '<td>'+'<span onclick="editModal(\''+item._id+'\')" style="font-size:1rem;cursor:pointer"><i class="fa fa-pen fa-sm text-green"></i></span>'+'</td>';
                 html += '<td>'+'<span onclick="showModal(\''+item._id+'\')" style="font-size:1.5rem;cursor:pointer"><i class="ni ni-fat-remove text-red"></i></span>'+'</td>';
                 html += '</tr>';
@@ -165,6 +173,7 @@
         $('#ingredient_name').val('');
         $('#description').val('');
         $('#edit_id').val('');
+        $('#source').val('');
         modal.style.display = 'block';
       }
       function editModal(id){
@@ -174,6 +183,7 @@
         $('#ingredient_name').val('');
         $('#description').val('');
         $('#edit_id').val('');
+        $('#source').val('');
         $.ajax({
           url:'/admin/getEditIngredient',
           type: "POST",
@@ -186,6 +196,7 @@
               var data = JSON.parse(res.data);
               $('#ingredient_name').val(data.name);
               $('#description').val(data.description);
+              $('#source').val(data.source);
               $('#edit_id').val(id);
             }else{
               $('#edit_id').val('');
