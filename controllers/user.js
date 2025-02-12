@@ -285,7 +285,7 @@ exports.getAskAi = async (req, res) => {
 };
 
 async function barcodeAI(words) {
-  const prompt = `${words}\n Please recommend product barcode list that presents an alternative to a better options, and return only result.(example: barcode || barcode || barcode)`;
+  const prompt = `${words}\n Please recommend product barcode list that presents an alternative to a better healthier in Open Food Facts, and return only result.(example: barcode || barcode || barcode)`;
   const result = await model.generateContent([prompt]);
   const barcodeList = result.response.candidates[0].content.parts[0].text.split(' || ').map(word => word.trim());
   return barcodeList;
