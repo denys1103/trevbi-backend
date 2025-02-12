@@ -28,6 +28,7 @@ module.exports = router => {
         data = data.map(item => ({
             name: item.name ? item.name.trim() : '',
             description: item.description ? item.description.trim() : '',
+            source: item.source ? item.source.trim() : '',
         })).filter(item => item.name && item.description);
 
         const existingNames = await ingredientsToAvoid.find({ name: { $in: data.map(item => item.name) } }, 'name');

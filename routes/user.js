@@ -11,6 +11,7 @@ const {
   getAskAi,
   getCorrectWords,
   geminiTest,
+  sendEmailTest,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -29,6 +30,7 @@ router.post('/getAvoidListData', getAvoidListData);
 router.post('/getAskAi', getAskAi);
 router.post('/getCorrectWords', getCorrectWords);
 router.get('/geminiTest', geminiTest);
+router.get('/sendEmailTest', sendEmailTest);
 router.post('/sign-out', isAuth, signOut);
 
 module.exports = router;

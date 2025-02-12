@@ -2,10 +2,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const HistoryActiveUser = require('../models/historyActiveUser');
 const ingredientsToAvoid = require('../models/ingredientsToAvoid');
+const sgMail = require('@sendgrid/mail');
 //gemini
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+//sendgrid
+sgMail.setApiKey(process.env.SENDGRID_KEY);
 
 exports.createUser = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -294,6 +297,24 @@ exports.getCorrectWords = async (req, res) => {
     console.log('gemini api error:', error);
   } finally {
     res.json({ success: true, results:TempIngredients });
+  }
+};
+
+exports.sendEmailTest = async (req, res) => {
+  const msg = {
+    to: process.env.MANAGER_EMAIL,
+    from: process.env.MANAGER_EMAIL,
+    replyTo: process.env.TESTER_EMAIL,
+    subject: 'Sendgrid Test',
+    html: 'This is <b>Test/b>',
+  };
+
+  try {
+      await sgMail.send(msg);
+      res.json({ success: true, message: 'Email sent successfully' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error sending email', error });
   }
 };
 
