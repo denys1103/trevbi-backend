@@ -131,7 +131,7 @@ exports.forgotPassword = async (req, res) => {
 	console.log(code, md5_code);
     const msg = {
       to: email,
-      from: `info@cleanlabel.com`,
+      from: process.env.MANAGER_EMAIL,
       subject: `Request of authorization from CleanLabelApp`,
       html: 'verification code:<b>'+code+'</b>',
     };
@@ -325,13 +325,21 @@ exports.getCorrectWords = async (req, res) => {
 };
 
 exports.sendEmailTest = async (req, res) => {
+  // const msg = {
+  //   to: process.env.MANAGER_EMAIL,
+  //   from: process.env.MANAGER_EMAIL,
+  //   replyTo: process.env.TESTER_EMAIL,
+  //   subject: 'Sendgrid Test',
+  //   html: 'This is <b>Test/b>',
+  // };
   const msg = {
-    to: process.env.MANAGER_EMAIL,
+    to: process.env.TESTER_EMAIL,
     from: process.env.MANAGER_EMAIL,
-    replyTo: process.env.TESTER_EMAIL,
     subject: 'Sendgrid Test',
     html: 'This is <b>Test/b>',
   };
+
+  console.log('msg:', JSON.stringify(msg, null, 2));
 
   try {
       await sgMail.send(msg);
