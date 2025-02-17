@@ -325,18 +325,31 @@ exports.getCorrectWords = async (req, res) => {
 };
 
 exports.sendEmailTest = async (req, res) => {
-  // const msg = {
-  //   to: process.env.MANAGER_EMAIL,
-  //   from: process.env.MANAGER_EMAIL,
-  //   replyTo: process.env.TESTER_EMAIL,
-  //   subject: 'Sendgrid Test',
-  //   html: 'This is <b>Test/b>',
-  // };
   const msg = {
     to: process.env.TESTER_EMAIL,
     from: process.env.MANAGER_EMAIL,
     subject: 'Sendgrid Test',
-    html: 'This is <b>Test/b>',
+    html: 'This is <b>Test</b>',
+  };
+
+  console.log('msg:', JSON.stringify(msg, null, 2));
+
+  try {
+      await sgMail.send(msg);
+      res.json({ success: true, message: 'Email sent successfully' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Error sending email', error });
+  }
+};
+
+exports.replyEmailTest = async (req, res) => {
+  const msg = {
+    to: process.env.MANAGER_EMAIL,
+    from: process.env.MANAGER_EMAIL,
+    replyTo: process.env.TESTER_EMAIL,
+    subject: 'Sendgrid Test',
+    html: 'This is <b>Test</b> feedback',
   };
 
   console.log('msg:', JSON.stringify(msg, null, 2));

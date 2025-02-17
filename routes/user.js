@@ -13,6 +13,7 @@ const {
   getCorrectWords,
   geminiTest,
   sendEmailTest,
+  replyEmailTest,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -33,6 +34,7 @@ router.post('/getBarcodeAi', getBarcodeAi);
 router.post('/getCorrectWords', getCorrectWords);
 router.get('/geminiTest', geminiTest);
 router.get('/sendEmailTest', sendEmailTest);
+router.get('/replyEmailTest', replyEmailTest);
 router.post('/sign-out', isAuth, signOut);
 
 module.exports = router;
