@@ -227,8 +227,8 @@ async function correctSpellingIngredients(ingredientsText) {
   // console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
   const resultText = result.response.candidates[0].content.parts[0].text;
   const correctedWords = resultText.split(' || ').map(word => word.trim());
-  if (resultText.toLowerCase().includes('yellow no.5') || resultText.toLowerCase().includes('yellow no. 5')) correctedWords.add('yellow no.5');
-  if (resultText.toLowerCase().includes('red no.3') || resultText.toLowerCase().includes('red no. 3')) correctedWords.add('red no.3');
+  if (resultText.toLowerCase().includes('yellow no.5') || resultText.toLowerCase().includes('yellow no. 5')) correctedWords.add('yellow 5');
+  if (resultText.toLowerCase().includes('red no.3') || resultText.toLowerCase().includes('red no. 3')) correctedWords.add('red 3');
   return correctedWords;
 }
 
