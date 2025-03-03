@@ -3,12 +3,17 @@ const User = require('../models/user');
 const HistoryActiveUser = require('../models/historyActiveUser');
 const ingredientsToAvoid = require('../models/ingredientsToAvoid');
 const sgMail = require('@sendgrid/mail');
+const OpenAI = require('openai');
 //gemini
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 //sendgrid
 sgMail.setApiKey(process.env.SENDGRID_KEY);
+//openai
+const gptClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 exports.createUser = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -363,6 +368,23 @@ exports.replyEmailTest = async (req, res) => {
   } catch (error) {
       console.error(error);
       res.status(500).send({ message: 'Error sending email', error });
+  }
+};
+
+exports.gptTest = async (req, res) => {
+  const params = {
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: 'Hi' }],
+  };
+
+  try {
+    const completion = await gptClient.chat.completions.create(params);
+    const result = completion.choices[0]?.message?.content;
+    console.log('gpt result:', result);
+    res.json({ success: true, message: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Error gpt api', error });
   }
 };
 

@@ -14,6 +14,7 @@ const {
   geminiTest,
   sendEmailTest,
   replyEmailTest,
+  gptTest,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -35,6 +36,7 @@ router.post('/getCorrectWords', getCorrectWords);
 router.get('/geminiTest', geminiTest);
 router.get('/sendEmailTest', sendEmailTest);
 router.get('/replyEmailTest', replyEmailTest);
+router.get('/gptTest', gptTest);
 router.post('/sign-out', isAuth, signOut);
 
 module.exports = router;
