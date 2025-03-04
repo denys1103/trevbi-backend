@@ -50,7 +50,7 @@ router.post('/recipe', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       console.log('no file uploaded');
-      res.json({ success: true, results:'' });
+      res.json({ success: false, results:'' });
     }
     const imageBuffer = req.file.buffer;
     const diets = req.body.diets;
@@ -70,7 +70,7 @@ router.post('/recipe', upload.single('image'), async (req, res) => {
 
   } catch (error) {
     console.log('Error processing recipe:', error);
-    res.json({ success: true, results:'' });
+    res.json({ success: false, results:'' });
   }
 });
 
