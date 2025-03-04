@@ -44,17 +44,13 @@ router.get('/replyEmailTest', replyEmailTest);
 router.get('/gptTest', gptTest);
 router.post('/sign-out', isAuth, signOut);
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/images/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '.' + file.originalname.split('.').pop())
-  }
-})
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 router.post('/recipe', upload.single('image'), async (req, res) => {
   try {
+    if (!req.file) {
+      res.json({ recipeImage:null, ingredients:null, msg: 'No file uploaded'});
+    }
     const imageBuffer = req.file.buffer;
     const diets = req.body.diets;
 
