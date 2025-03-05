@@ -48,6 +48,11 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 router.post('/recipe', upload.single('image'), async (req, res) => {
   try {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    console.log(`Date: ${day} - ${hour}:${minute}, diets: ${req.body.diets}`);
     if (!req.file) {
       console.log('no file uploaded');
       res.json({ success: false, results:'' });
@@ -65,7 +70,6 @@ router.post('/recipe', upload.single('image'), async (req, res) => {
 
     const result = await model.generateContent([prompt, image]);
     const response = result.response.candidates[0].content.parts[0].text;
-    console.log('gemini response:', JSON.stringify(response, null, 2))
     res.json({ success: true, results:response });
 
   } catch (error) {
