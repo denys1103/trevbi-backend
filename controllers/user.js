@@ -262,7 +262,7 @@ exports.getAvoidListData = async (req, res) => {
           .map(item => new RegExp(`^${escapeRegExp(item)}$`, 'i'))
       }
     })
-    .limit(15);
+    .limit(20);
   
     res.json({ success: true, results });
   }
