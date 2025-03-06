@@ -227,11 +227,11 @@ exports.getAvoidData = async (req, res) => {
 };
 
 async function correctSpellingIngredients(ingredientsText) {
-  const prompt = `In the following text, translate the words into English, and return only result(includes ingredients in parentheses). Only return the ingredients separated by "||" and if there are no ingredients, return words separated by "||". If the example text is "Artificial color (including F.D.&C. Yellow No.5, FD&C Red No.3), Contains 2% Or Less Of Vegetable Oil (Hydrogenated Coconut, Soybean And/or Cottonseed)", Return example is "Artificial color || Yellow No.5 || Red No.3 || Vegetable Oil || Hydrogenated Coconut || Soybean || Cottonseed".\nThe text is: ${ingredientsText}`;
+  const prompt = `In the following text, translate the words into English, and return only result(includes ingredients in parentheses). Only return the ingredients separated by "||" and if there are no ingredients, return words separated by "||". If the example text is "Artificial color (including F.D.&C. Yellow No.5, FD&C Red No.3), Contains 2% Or Less Of Vegetable Oil (Hydrogenated Coconut, Soybean And/or Cottonseed)", Return example is "Artificial color||Yellow No.5||Red No.3||Vegetable Oil||Hydrogenated Coconut||Soybean||Cottonseed".\nThe text is: ${ingredientsText}`;
   const result = await model.generateContent([prompt]);
   // console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
   const resultText = result.response.candidates[0].content.parts[0].text;
-  const correctedWords = resultText.split(' || ').map(word => word.trim());
+  const correctedWords = resultText.split('||').map(word => word.trim());
   if (resultText.toLowerCase().includes('yellow no.5') || resultText.toLowerCase().includes('yellow no. 5')) correctedWords.add('yellow 5');
   if (resultText.toLowerCase().includes('red no.3') || resultText.toLowerCase().includes('red no. 3')) correctedWords.add('red 3');
   return correctedWords;
