@@ -54,7 +54,7 @@ router.post('/getIngredientsForRecipe', upload.single('image'), async (req, res)
     }
     const imageBuffer = req.file.buffer;
 
-    const prompt = `Given this food image. Generate a list of ingredients, and return only result`;
+    const prompt = `Given this food image. Generate a list of ingredients(with simple description), and return only result`;
     const image = {
       inlineData: {
         data: imageBuffer.toString("base64"),
