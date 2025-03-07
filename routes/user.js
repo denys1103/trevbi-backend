@@ -87,7 +87,7 @@ router.post('/makeRecipe', upload.single('image'), async (req, res) => {
     const diets = req.body.diets;
     const ingredients = req.body.ingredients;
 
-    const prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe and a list of ingredients. Start with \"AI-generated recipe image coming soon! In the meantime, here’s a recipe based on the ingredients detected in your photo.\"`;
+    const prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe and a list of ingredients. Start with \"AI-generated recipe image coming soon! In the meantime, here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
     const image = {
       inlineData: {
         data: imageBuffer.toString("base64"),
