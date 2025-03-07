@@ -46,6 +46,66 @@ router.post('/sign-out', isAuth, signOut);
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+router.post('/getIngredientsForRecipe', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      console.log('no file uploaded');
+      res.json({ success: false, results:'' });
+    }
+    const imageBuffer = req.file.buffer;
+    const diets = req.body.diets;
+
+    const prompt = `Given this food image and dietary: ${diets}. Generate a list of ingredients.`;
+    const image = {
+      inlineData: {
+        data: imageBuffer.toString("base64"),
+        mimeType: req.file.mimetype,
+      },
+    };
+
+    const result = await model.generateContent([prompt, image]);
+    const response = result.response.candidates[0].content.parts[0].text;
+    res.json({ success: true, results:response });
+
+  } catch (error) {
+    console.log('Error processing get ingredients for recipe:', error);
+    res.json({ success: false, results:'' });
+  }
+});
+
+router.post('/makeRecipe', upload.single('image'), async (req, res) => {
+  try {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    console.log(`Date: ${day} - ${hour}:${minute}, diets: ${req.body.diets}`);
+    if (!req.file) {
+      console.log('no file uploaded');
+      res.json({ success: false, results:'' });
+    }
+    const imageBuffer = req.file.buffer;
+    const diets = req.body.diets;
+    const ingredients = req.body.ingredients;
+
+    const prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe and a list of ingredients. Start with \"AI-generated recipe image coming soon! In the meantime, here’s a recipe based on the ingredients detected in your photo\"`;
+    const image = {
+      inlineData: {
+        data: imageBuffer.toString("base64"),
+        mimeType: req.file.mimetype,
+      },
+    };
+
+    const result = await model.generateContent([prompt, image]);
+    const response = result.response.candidates[0].content.parts[0].text;
+    res.json({ success: true, results:response });
+
+  } catch (error) {
+    console.log('Error processing recipe:', error);
+    res.json({ success: false, results:'' });
+  }
+});
+
 router.post('/recipe', upload.single('image'), async (req, res) => {
   try {
     const date = new Date();
