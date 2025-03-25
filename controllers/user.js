@@ -227,7 +227,7 @@ exports.getAvoidData = async (req, res) => {
 };
 
 async function correctSpellingIngredients(ingredientsText) {
-  const prompt = `In the following text, if the text are in another language, translate them into English, and return only result(includes ingredients in parentheses). Only return the ingredients separated by "||" and if there are no ingredients, return words separated by "||". If the example text is "Artificial color (including F.D.&C. Yellow No.5, FD&C Red No.3), Contains 2% Or Less Of Vegetable Oil (Hydrogenated Coconut, Soybean And/or Cottonseed)", Return example is "Artificial color||Yellow No.5||Red No.3||Vegetable Oil||Hydrogenated Coconut||Soybean||Cottonseed".\nThe text is: ${ingredientsText}`;
+  const prompt = `In the following text, if the text are in Spanish language, translate them into English, and return only result(includes ingredients in parentheses). Only return the ingredients separated by "||" and if there are no ingredients, return words separated by "||". If the example text is "Artificial color (including F.D.&C. Yellow No.5, FD&C Red No.3), Contains 2% Or Less Of Vegetable Oil (Hydrogenated Coconut, Soybean And/or Cottonseed)", Return example is "Artificial color||Yellow No.5||Red No.3||Vegetable Oil||Hydrogenated Coconut||Soybean||Cottonseed".\nThe text is: ${ingredientsText}`;
   const result = await model.generateContent([prompt]);
   // console.log('correctSpellingIngredients:', result.response.candidates[0].content.parts[0].text)
   const resultText = result.response.candidates[0].content.parts[0].text;
