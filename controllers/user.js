@@ -116,7 +116,7 @@ exports.userSignIn = async (req, res) => {
     avatar: user.avatar ? user.avatar : '',
   };
 
-  res.json({ success: true, user: userInfo });
+  res.json({ success: true, user: userInfo, token });
 };
 
 exports.forgotPassword = async (req, res) => {
