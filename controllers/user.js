@@ -387,6 +387,30 @@ exports.gptTest = async (req, res) => {
   }
 };
 
+exports.uploadProfile = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    await User.findByIdAndUpdate(req.user._id, { ...req.body[0] });
+    const user = await User.findById(req.user._id);
+    const userInfo = {
+	    _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      gender: user.gender,
+      birth: user.birth,
+      phone_num: user.phone_num,
+      avatar: user.avatar ? user.avatar : '',
+    };
+  
+    res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;

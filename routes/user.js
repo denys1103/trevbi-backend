@@ -1,5 +1,6 @@
 var express = require('express');
 const multer = require('multer');
+const User = require('../models/user');
 //gemini
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
@@ -20,6 +21,7 @@ const {
   sendEmailTest,
   replyEmailTest,
   gptTest,
+  uploadProfile,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -42,6 +44,7 @@ router.get('/geminiTest', geminiTest);
 router.get('/sendEmailTest', sendEmailTest);
 router.get('/replyEmailTest', replyEmailTest);
 router.get('/gptTest', gptTest);
+router.post('/save-profile', isAuth, uploadProfile);
 router.post('/sign-out', isAuth, signOut);
 
 const storage = multer.memoryStorage();
@@ -174,6 +177,36 @@ router.post('/recipe', upload.single('image'), async (req, res) => {
     console.log('Error processing recipe:', error);
     res.json({ success: false, results:'' });
   }
+});
+
+const imgStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/images/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '.' + file.originalname.split('.').pop())
+  }
+})
+const img_upload = multer({ storage: imgStorage });
+router.post("/upload-avata", isAuth, img_upload.single('file'), async (req, res, next) => {
+  if (!req.file) {
+    res.json({ success: false, message: 'Upload Photo File failed!' });
+  }
+  const image_name = req.file.filename;
+  if(image_name)
+    await User.findByIdAndUpdate(req.user._id, { 'avatar': image_name});
+  const user = await User.findById(req.user._id);
+  const userInfo = {
+    _id: user._id,
+    fullname: user.fullname,
+    email: user.email,
+    gender: user.gender,
+    birth: user.birth,
+    phone_num: user.phone_num,
+    avatar: user.avatar ? user.avatar : '',
+  };
+
+  res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });
 });
 
 module.exports = router;
