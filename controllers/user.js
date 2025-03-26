@@ -113,7 +113,6 @@ exports.userSignIn = async (req, res) => {
     gender: user.gender,
     birth: user.birth,
     phone_num: user.phone_num,
-    about_you: user.about_you,
     avatar: user.avatar ? user.avatar : '',
   };
 

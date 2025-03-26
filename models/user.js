@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
   gender: String,
   birth: String,
   phone_num: String,
-  about_you: String,
   tokens: [{ type: Object }],
   status: {
     type: Number,
