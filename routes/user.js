@@ -22,6 +22,7 @@ const {
   replyEmailTest,
   gptTest,
   uploadProfile,
+  saveFeedback,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -45,6 +46,7 @@ router.get('/sendEmailTest', sendEmailTest);
 router.get('/replyEmailTest', replyEmailTest);
 router.get('/gptTest', gptTest);
 router.post('/save-profile', isAuth, uploadProfile);
+router.post('/save-feedback', isAuth, saveFeedback);
 router.post('/sign-out', isAuth, signOut);
 
 const storage = multer.memoryStorage();

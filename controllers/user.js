@@ -411,6 +411,20 @@ exports.uploadProfile = async (req, res) => {
   }
 };
 
+exports.saveFeedback = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    console.log('feedback data:', req.body[0])
+  
+    res.json({ success: true, message: 'Share feedback successfully!' });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
