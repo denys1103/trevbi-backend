@@ -127,7 +127,11 @@ router.post('/makeMealRecipe', upload.single('image'), async (req, res) => {
     const meal = req.body.meal;
     let prompt = '';
     if(meal){
-      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      if(meal=='bake'){
+        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }else{
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }
     }else{
       prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
     }
