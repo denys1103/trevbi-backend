@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const HistoryActiveUser = require('../models/historyActiveUser');
 const ingredientsToAvoid = require('../models/ingredientsToAvoid');
+const Feedback = require('../models/feedback');
 const sgMail = require('@sendgrid/mail');
 const OpenAI = require('openai');
 //gemini
@@ -420,6 +421,10 @@ exports.saveFeedback = async (req, res) => {
         .json({ success: false, message: token });
     }
     console.log('feedback data:', req.body[0])
+    const feedback = await Feedback({
+      ...req.body[0]
+    });
+    await feedback.save();
   
     res.json({ success: true, message: 'Share feedback successfully!' });
   }
