@@ -25,6 +25,7 @@ const {
   saveFeedback,
   getUsers,
   followRequest,
+  getFriendList,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -51,6 +52,7 @@ router.post('/save-profile', isAuth, uploadProfile);
 router.post('/save-feedback', isAuth, saveFeedback);
 router.post('/get-users', isAuth, getUsers);
 router.post('/follow-request', isAuth, followRequest);
+router.post('/get-friends', isAuth, getFriendList);
 router.post('/sign-out', isAuth, signOut);
 
 const storage = multer.memoryStorage();

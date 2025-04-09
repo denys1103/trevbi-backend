@@ -452,18 +452,42 @@ exports.followRequest = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
+    
     const { id } = req.body;
     const user = await User.findById(req.user._id);
     const targetUser = await User.findById(id);
+    try {
+      if (!user.following.includes(targetUser._id)) {
+        user.following.push(targetUser._id);
+        targetUser.followers.push(user._id);
+        await User.findByIdAndUpdate(req.user._id, {
+          following: user.following,
+        });
+        await User.findByIdAndUpdate(targetUser._id, {
+          followers: targetUser.followers,
+        });
+      }
 
-    if (!user.following.includes(targetUser._id)) {
-      user.following.push(targetUser._id);
-      targetUser.followers.push(user._id);
-      await user.save();
-      await targetUser.save();
+      res.json({ success: true, following: user.following });
+    } catch (err) {
+      console.error(err);
+      res.json({ success: true, following: user.following });
     }
+  }
+};
 
-    res.json({ success: true, following: user.following });
+exports.getFriendList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const user = await User.findById(req.user._id);
+    const friends = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1});
+  
+    res.json({ success: true, friends });
   }
 };
 
