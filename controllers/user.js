@@ -444,6 +444,29 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+exports.followRequest = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { id } = req.body;
+    const user = await User.findById(req.user._id);
+    const targetUser = await User.findById(id);
+
+    if (!user.following.includes(targetUser._id)) {
+      user.following.push(targetUser._id);
+      targetUser.followers.push(user._id);
+      await user.save();
+      await targetUser.save();
+    }
+
+    res.json({ success: true, following: user.following });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
