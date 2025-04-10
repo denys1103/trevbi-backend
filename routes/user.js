@@ -1,10 +1,15 @@
 var express = require('express');
 const multer = require('multer');
 const User = require('../models/user');
+var path = require('path');
+const fs = require('fs')
 //gemini
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+//gemini-2.0
+const { GoogleGenAI } = require('@google/genai');
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY_v2 });
 var router = express.Router();
 
 const {
@@ -54,6 +59,12 @@ router.post('/get-users', isAuth, getUsers);
 router.post('/follow-request', isAuth, followRequest);
 router.post('/get-friends', isAuth, getFriendList);
 router.post('/sign-out', isAuth, signOut);
+
+// Make sure uploads/images exists
+const uploadDir = path.join(__dirname, '..', 'uploads', 'recipeImgs',);
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -156,6 +167,74 @@ router.post('/makeMealRecipe', upload.single('image'), async (req, res) => {
   } catch (error) {
     console.log('Error processing recipe:', error);
     res.json({ success: false, results:'' });
+  }
+});
+
+router.post('/makeMealRecipeV2', upload.single('image'), async (req, res) => {
+  try {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    console.log(`Date: ${day} - ${hour}:${minute}, diets: ${req.body.diets}`);
+    if (!req.file) {
+      console.log('no file uploaded');
+      res.json({ success: false, results:'' });
+    }
+    const imageBuffer = req.file.buffer;
+    const diets = req.body.diets;
+    const ingredients = req.body.ingredients;
+    const meal = req.body.meal;
+    let prompt = '';
+    if(meal){
+      if(meal=='bake'){
+        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }else{
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }
+    }else{
+      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+    }
+
+    const contents = [
+      { text: prompt },
+      {
+        inlineData: {
+          data: imageBuffer.toString("base64"),
+          mimeType: req.file.mimetype,
+        },
+      },
+    ];
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-exp-image-generation",
+      contents: contents,
+      config: {
+        responseModalities: ["Text", "Image"],
+      },
+    });
+    let recipeText = '';
+    let recipeImg = '';
+    console.log('response.candidates[0].content.parts:', response.candidates[0].content.parts);
+    for (const part of response.candidates[0].content.parts) {
+      if (part.text) {
+        console.log(part.text);
+        recipeText = part.text;
+      } else if (part.inlineData) {
+        const imageData = part.inlineData.data;
+        const buffer = Buffer.from(imageData, "base64");
+        const filename = `gen_${Date.now()}.png`;
+        const filepath = path.join(uploadDir, filename);
+
+        fs.writeFileSync(filepath, buffer);
+        recipeImg = filename;
+      }
+    }
+
+    res.json({ success: true, results:{recipeText, recipeImg} });
+
+  } catch (error) {
+    console.log('Error processing recipe:', error);
+    res.json({ success: false, results:{recipeText: '', recipeImg: ''} });
   }
 });
 
