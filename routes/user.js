@@ -188,12 +188,12 @@ router.post('/makeMealRecipeV2', upload.single('image'), async (req, res) => {
     let prompt = '';
     if(meal){
       if(meal=='bake'){
-        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, a list of ingredients, and one recipe results image. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
       }else{
-        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, a list of ingredients, and one recipe results image. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
       }
     }else{
-      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe and a list of ingredients. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, a list of ingredients, and one recipe results image. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
     }
 
     const contents = [
