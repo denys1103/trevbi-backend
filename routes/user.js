@@ -214,10 +214,8 @@ router.post('/makeMealRecipeV2', upload.single('image'), async (req, res) => {
     });
     let recipeText = '';
     let recipeImg = '';
-    console.log('response.candidates[0].content.parts:', response.candidates[0].content.parts);
     for (const part of response.candidates[0].content.parts) {
       if (part.text) {
-        console.log(part.text);
         recipeText = part.text;
       } else if (part.inlineData) {
         const imageData = part.inlineData.data;
