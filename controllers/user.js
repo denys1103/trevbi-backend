@@ -73,7 +73,7 @@ exports.userSignIn = async (req, res) => {
     });
 
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
+    expiresIn: '100d',
   });
 
   let oldTokens = user.tokens || [];
