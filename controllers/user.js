@@ -5,6 +5,7 @@ const ingredientsToAvoid = require('../models/ingredientsToAvoid');
 const Feedback = require('../models/feedback');
 const sgMail = require('@sendgrid/mail');
 const OpenAI = require('openai');
+var md5 = require('md5');
 //gemini
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
