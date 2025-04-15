@@ -38,11 +38,12 @@ const {
   validateUserSignUp,
   userVlidation,
   validateUserSignIn,
+  validateGoogleSignIn,
 } = require('../middlewares/validation/user');
 
 router.post('/create-user', validateUserSignUp, userVlidation, createUser);
 router.post('/sign-in', validateUserSignIn, userVlidation, userSignIn);
-router.post('/forgot-password', validateUserSignIn, userVlidation, forgotPassword);
+router.post('/forgot-password', validateGoogleSignIn, userVlidation, forgotPassword);
 router.get('/getIngredientsToAvoid', getIngredientsToAvoid);
 router.post('/getAvoidData', getAvoidData);
 router.post('/getAvoidListData', getAvoidListData);

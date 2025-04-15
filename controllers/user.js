@@ -132,12 +132,12 @@ exports.forgotPassword = async (req, res) => {
     const min = 10000;
     const max = 99999;
     const code = Math.floor(Math.random() * (max - min + 1)) + min;
-	const md5_code = md5(code.toString());
-	console.log(code, md5_code);
+    const md5_code = md5(code.toString());
+    // console.log(code, md5_code);
     const msg = {
       to: email,
       from: process.env.MANAGER_EMAIL,
-      subject: `Request of authorization from CleanLabelApp`,
+      subject: `Request of authorization from TREVBI App`,
       html: 'verification code:<b>'+code+'</b>',
     };
 

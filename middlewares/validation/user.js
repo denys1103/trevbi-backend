@@ -46,3 +46,7 @@ exports.validateUserSignIn = [
     .isEmpty()
     .withMessage('email / password is required!'),
 ];
+
+exports.validateGoogleSignIn = [
+  check('email').trim().isEmail().withMessage('Invalid email address!'),
+];
