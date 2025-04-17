@@ -472,10 +472,31 @@ exports.followRequest = async (req, res) => {
         });
       }
 
-      res.json({ success: true, following: user.following });
+      const userInfo = {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        gender: user.gender,
+        birth: user.birth,
+        phone_num: user.phone_num,
+        avatar: user.avatar ? user.avatar : '',
+        following: user.following,
+      };
+
+      res.json({ success: true, user: userInfo });
     } catch (err) {
       console.error(err);
-      res.json({ success: true, following: user.following });
+      const userInfo = {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        gender: user.gender,
+        birth: user.birth,
+        phone_num: user.phone_num,
+        avatar: user.avatar ? user.avatar : '',
+        following: user.following,
+      };
+      res.json({ success: true, user: userInfo });
     }
   }
 };
