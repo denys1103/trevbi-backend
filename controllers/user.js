@@ -440,7 +440,7 @@ exports.getUsers = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const users = await User.find({});
+    const users = await User.find({}).select({ "fullname": 1, "avatar": 1, 'following': 1});
   
     res.json({ success: true, users });
   }
