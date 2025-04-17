@@ -294,6 +294,7 @@ router.post("/upload-avata", isAuth, img_upload.single('file'), async (req, res,
     birth: user.birth,
     phone_num: user.phone_num,
     avatar: user.avatar ? user.avatar : '',
+    following: user.following,
   };
 
   res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });

@@ -117,6 +117,7 @@ exports.userSignIn = async (req, res) => {
     birth: user.birth,
     phone_num: user.phone_num,
     avatar: user.avatar ? user.avatar : '',
+    following: user.following,
   };
 
   res.json({ success: true, user: userInfo, token });
@@ -408,6 +409,7 @@ exports.uploadProfile = async (req, res) => {
       birth: user.birth,
       phone_num: user.phone_num,
       avatar: user.avatar ? user.avatar : '',
+      following: user.following,
     };
   
     res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });
