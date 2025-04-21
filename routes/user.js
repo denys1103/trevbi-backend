@@ -303,7 +303,7 @@ router.post('/makeMealRecipeV3', isAuth, upload.single('image'), async (req, res
     });
     await recipe.save();
 
-    res.json({ success: true, results:{recipeText, recipeImg} });
+    res.json({ success: true, results:{recipeText, recipeImg, recipeId: recipe._id} });
 
   } catch (error) {
     console.log('Error processing recipe:', error);
