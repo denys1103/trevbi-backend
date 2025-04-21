@@ -1,6 +1,7 @@
 var express = require('express');
 const multer = require('multer');
 const User = require('../models/user');
+const RecipeList = require('../models/recipeList');
 var path = require('path');
 const fs = require('fs')
 //gemini
@@ -228,6 +229,79 @@ router.post('/makeMealRecipeV2', upload.single('image'), async (req, res) => {
         recipeImg = filename;
       }
     }
+
+    res.json({ success: true, results:{recipeText, recipeImg} });
+
+  } catch (error) {
+    console.log('Error processing recipe:', error);
+    res.json({ success: false, results:{recipeText: '', recipeImg: ''} });
+  }
+});
+
+router.post('/makeMealRecipeV3', isAuth, upload.single('image'), async (req, res) => {
+  try {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    console.log(`Date: ${day} - ${hour}:${minute}, diets: ${req.body.diets}`);
+    if (!req.file) {
+      console.log('no file uploaded');
+      res.json({ success: false, results:'' });
+    }
+    const imageBuffer = req.file.buffer;
+    const diets = req.body.diets;
+    const ingredients = req.body.ingredients;
+    const meal = req.body.meal;
+    let prompt = '';
+    if(meal){
+      if(meal=='bake'){
+        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, a list of ingredients, and one recipe results image. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }else{
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, a list of ingredients, and one recipe results image. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }
+    }else{
+      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, a list of ingredients, and one recipe results image. Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+    }
+
+    const contents = [
+      { text: prompt },
+      {
+        inlineData: {
+          data: imageBuffer.toString("base64"),
+          mimeType: req.file.mimetype,
+        },
+      },
+    ];
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-exp-image-generation",
+      contents: contents,
+      config: {
+        responseModalities: ["Text", "Image"],
+      },
+    });
+    let recipeText = '';
+    let recipeImg = '';
+    for (const part of response.candidates[0].content.parts) {
+      if (part.text) {
+        recipeText = part.text;
+      } else if (part.inlineData) {
+        const imageData = part.inlineData.data;
+        const buffer = Buffer.from(imageData, "base64");
+        const filename = `gen_${Date.now()}.png`;
+        const filepath = path.join(uploadDir, filename);
+
+        fs.writeFileSync(filepath, buffer);
+        recipeImg = filename;
+      }
+    }
+    const recipe = await RecipeList({
+      userid: req.user._id,
+      title: '',
+      img: recipeImg,
+      text: recipeText,
+    });
+    await recipe.save();
 
     res.json({ success: true, results:{recipeText, recipeImg} });
 
