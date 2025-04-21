@@ -531,6 +531,36 @@ exports.saveRecipe = async (req, res) => {
   }
 };
 
+exports.getRecipeList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1}).sort({_id: -1 });;
+  
+    res.json({ success: true, recipes });
+  }
+};
+
+exports.delRecipe = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { recipeId } = req.body;
+    if(recipeId){
+      await RecipeList.deleteOne({_id: recipeId});
+    }
+    res.json({ success: true, message: 'Remove recipe successfully!' });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
