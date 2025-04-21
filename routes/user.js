@@ -32,6 +32,7 @@ const {
   getUsers,
   followRequest,
   getFriendList,
+  saveRecipe,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -60,6 +61,7 @@ router.post('/save-feedback', isAuth, saveFeedback);
 router.post('/get-users', isAuth, getUsers);
 router.post('/follow-request', isAuth, followRequest);
 router.post('/get-friends', isAuth, getFriendList);
+router.post('/save-recipe', isAuth, saveRecipe);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists

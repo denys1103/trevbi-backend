@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const HistoryActiveUser = require('../models/historyActiveUser');
 const ingredientsToAvoid = require('../models/ingredientsToAvoid');
+const RecipeList = require('../models/recipeList');
 const Feedback = require('../models/feedback');
 const sgMail = require('@sendgrid/mail');
 const OpenAI = require('openai');
@@ -513,6 +514,20 @@ exports.getFriendList = async (req, res) => {
     const friends = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1});
   
     res.json({ success: true, friends });
+  }
+};
+
+exports.saveRecipe = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { recipeId } = req.body;
+    await RecipeList.findByIdAndUpdate(recipeId, { status: 1 });
+    res.json({ success: true, message: 'Save recipe successfully!' });
   }
 };
 
