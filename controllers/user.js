@@ -427,7 +427,8 @@ exports.saveFeedback = async (req, res) => {
     }
     console.log('feedback data:', req.body[0])
     const feedback = await Feedback({
-      ...req.body[0]
+      ...req.body[0],
+      userid: req.user._id,
     });
     await feedback.save();
   
@@ -557,7 +558,8 @@ exports.delRecipe = async (req, res) => {
     if(recipeId){
       await RecipeList.deleteOne({_id: recipeId});
     }
-    res.json({ success: true, message: 'Remove recipe successfully!' });
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1}).sort({_id: -1 });;
+    res.json({ success: true, message: 'Remove recipe successfully!', recipes });
   }
 };
 
