@@ -8,6 +8,12 @@ const recipeListSchema = new mongoose.Schema({
   title: {
     type: String,
   },
+  servings: {
+    type: Number,
+  },
+  cookTime: {
+    type: String,
+  },
   img: {
     type: String,
   },
