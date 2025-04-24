@@ -9,7 +9,8 @@ const recipeListSchema = new mongoose.Schema({
     type: String,
   },
   servings: {
-    type: Number,
+    type: String,
+    default: '0',
   },
   cookTime: {
     type: String,
