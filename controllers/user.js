@@ -572,7 +572,6 @@ exports.updateRecipe = async (req, res) => {
         .json({ success: false, message: token });
     }
     const recipeId = req.body[0]._id;
-    console.log(JSON.stringify(req.body[0], null, 2));
     await RecipeList.findByIdAndUpdate(recipeId, { ...req.body[0] });
     const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });;
   
