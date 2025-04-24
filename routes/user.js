@@ -380,4 +380,22 @@ router.post("/upload-avata", isAuth, img_upload.single('file'), async (req, res,
   res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });
 });
 
+const recipeImgStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/recipeImgs/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '.' + file.originalname.split('.').pop())
+  }
+})
+const recipe_img_upload = multer({ storage: recipeImgStorage });
+router.post("/upload-recipeimg", isAuth, recipe_img_upload.single('file'), async (req, res, next) => {
+  if (!req.file) {
+    res.json({ success: false, message: 'Upload Photo File failed!' });
+  }
+  const image_name = req.file.filename;
+
+  res.json({ success: true, img: image_name, message: 'Upload photo file successfully!' });
+});
+
 module.exports = router;
