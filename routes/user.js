@@ -67,7 +67,7 @@ router.post('/get-friends', isAuth, getFriendList);
 router.post('/save-recipe', isAuth, saveRecipe);
 router.post('/get-recipes', isAuth, getRecipeList);
 router.post('/del-recipe', isAuth, delRecipe);
-router.post('/save-recipe', isAuth, updateRecipe);
+router.post('/update-recipe', isAuth, updateRecipe);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists
