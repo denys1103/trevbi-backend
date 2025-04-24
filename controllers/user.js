@@ -540,7 +540,7 @@ exports.getRecipeList = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1}).sort({_id: -1 });;
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });;
   
     res.json({ success: true, recipes });
   }
