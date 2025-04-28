@@ -117,7 +117,7 @@ exports.userSignIn = async (req, res) => {
     gender: user.gender,
     birth: user.birth,
     phone_num: user.phone_num,
-    aboutYou: user.aboutYou,
+    bio: user.bio,
     avatar: user.avatar ? user.avatar : '',
     following: user.following,
   };
@@ -410,7 +410,7 @@ exports.uploadProfile = async (req, res) => {
       gender: user.gender,
       birth: user.birth,
       phone_num: user.phone_num,
-      aboutYou: user.aboutYou,
+      bio: user.bio,
       avatar: user.avatar ? user.avatar : '',
       following: user.following,
     };
@@ -483,7 +483,7 @@ exports.followRequest = async (req, res) => {
         gender: user.gender,
         birth: user.birth,
         phone_num: user.phone_num,
-        aboutYou: user.aboutYou,
+        bio: user.bio,
         avatar: user.avatar ? user.avatar : '',
         following: user.following,
       };
@@ -498,7 +498,7 @@ exports.followRequest = async (req, res) => {
         gender: user.gender,
         birth: user.birth,
         phone_num: user.phone_num,
-        aboutYou: user.aboutYou,
+        bio: user.bio,
         avatar: user.avatar ? user.avatar : '',
         following: user.following,
       };
