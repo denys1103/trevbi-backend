@@ -412,30 +412,36 @@ const postImgStorage = multer.diskStorage({
 })
 const post_img_upload = multer({ storage: postImgStorage });
 router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, res, next) => {
-  if (!req.file) {
-    res.json({ success: false, message: 'Upload Photo File failed!' });
-  }
-  const image_name = req.file.filename;
-
-  const title = req.body.title;
-  const note = req.body.note;
-  const id = req.body.id;
-
-  if(!id){
-    const MessageBoardData = await MessageBoard({
-      userid: req.user._id,
-      photo: image_name,
-      title,
-      note,
-      status: 1,   
-    });
-    await MessageBoardData.save();
-    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
-    res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
-  }else{
-    await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
-    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
-    res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+  try {
+    if (!req.file) {
+      res.json({ success: false, message: 'Upload Photo File failed!' });
+    }
+    const image_name = req.file.filename;
+  
+    const title = req.body.title;
+    const note = req.body.note;
+    const id = req.body.id;
+  
+    if(!id){
+      console.log(id, title, note, image_name)
+      const MessageBoardData = await MessageBoard({
+        userid: req.user._id,
+        photo: image_name,
+        title,
+        note,
+        status: 1,   
+      });
+      await MessageBoardData.save();
+      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+      res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
+    }else{
+      console.log(id, title, note, image_name)
+      await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
+      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+      res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+    }
+  } catch (error) {
+    console.log('Error processing post:', error);
   }
 });
 router.post("/upload-txtpost", isAuth, async (req, res, next) => {
