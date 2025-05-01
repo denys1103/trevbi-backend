@@ -2,6 +2,7 @@ var express = require('express');
 const multer = require('multer');
 const User = require('../models/user');
 const RecipeList = require('../models/recipeList');
+const MessageBoard = require('../models/messageBoard');
 var path = require('path');
 const fs = require('fs')
 //gemini
@@ -399,6 +400,64 @@ router.post("/upload-recipeimg", isAuth, recipe_img_upload.single('file'), async
   const image_name = req.file.filename;
 
   res.json({ success: true, img: image_name, message: 'Upload photo file successfully!' });
+});
+
+const postImgStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/postImgs/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '.' + file.originalname.split('.').pop())
+  }
+})
+const post_img_upload = multer({ storage: postImgStorage });
+router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, res, next) => {
+  if (!req.file) {
+    res.json({ success: false, message: 'Upload Photo File failed!' });
+  }
+  const image_name = req.file.filename;
+
+  const title = req.body.title;
+  const note = req.body.note;
+  const id = req.body.id;
+
+  if(!id){
+    const MessageBoardData = await MessageBoard({
+      userid: req.user._id,
+      photo: image_name,
+      title,
+      note,
+      status: 1,   
+    });
+    await MessageBoardData.save();
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
+  }else{
+    await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+  }
+});
+router.post("/upload-txtpost", isAuth, async (req, res, next) => {
+  const title = req.body[0].title;
+  const note = req.body[0].note;
+  const id = req.body[0].id;
+
+  if(!id){
+    const MessageBoardData = await MessageBoard({
+      userid: req.user._id,
+      title,
+      note,
+      status: 1,   
+    });
+    await MessageBoardData.save();
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
+  }else{
+    await MessageBoard.findByIdAndUpdate(id, { title, note });
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+  }
 });
 
 module.exports = router;

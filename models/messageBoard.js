@@ -1,0 +1,30 @@
+const mongoose = require('mongoose');
+
+const messageBoardSchema = new mongoose.Schema({
+  userid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  title: {
+    type: String,
+  },
+  note: {
+    type: String,
+  },
+  photo: {
+    type: String,
+  },
+  status: {
+    type: Number,
+    default: 0,
+  },
+  like: { type: [] },
+  unlike: { type: [] },
+  comment: { type: [] },
+  date: {
+    type: Date,
+    default: Date.now,
+  }
+});
+
+module.exports = mongoose.model('MessageBoard', messageBoardSchema);
