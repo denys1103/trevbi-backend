@@ -77,6 +77,11 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+const uploadPostDir = path.join(__dirname, '..', 'uploads', 'postImgs',);
+if (!fs.existsSync(uploadPostDir)) {
+  fs.mkdirSync(uploadPostDir, { recursive: true });
+}
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 router.post('/getIngredientsForRecipe', upload.single('image'), async (req, res) => {
@@ -423,7 +428,6 @@ router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, 
     const id = req.body.id;
   
     if(!id){
-      console.log(id, title, note, image_name)
       const MessageBoardData = await MessageBoard({
         userid: req.user._id,
         photo: image_name,
@@ -435,7 +439,6 @@ router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, 
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
     }else{
-      console.log(id, title, note, image_name)
       await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
