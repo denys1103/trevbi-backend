@@ -427,7 +427,11 @@ router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, 
     const note = req.body.note;
     const id = req.body.id;
   
-    if(!id){
+    if(id){
+      await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
+      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+      res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+    }else{
       const MessageBoardData = await MessageBoard({
         userid: req.user._id,
         photo: image_name,
@@ -438,10 +442,6 @@ router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, 
       await MessageBoardData.save();
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
-    }else{
-      await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
-      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
-      res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
     }
   } catch (error) {
     console.log('Error processing post:', error);
@@ -452,7 +452,11 @@ router.post("/upload-txtpost", isAuth, async (req, res, next) => {
   const note = req.body[0].note;
   const id = req.body[0].id;
 
-  if(!id){
+  if(id){
+    await MessageBoard.findByIdAndUpdate(id, { title, note });
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+  }else{
     const MessageBoardData = await MessageBoard({
       userid: req.user._id,
       title,
@@ -462,10 +466,6 @@ router.post("/upload-txtpost", isAuth, async (req, res, next) => {
     await MessageBoardData.save();
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
     res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
-  }else{
-    await MessageBoard.findByIdAndUpdate(id, { title, note });
-    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
-    res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
   }
 });
 
