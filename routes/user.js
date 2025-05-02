@@ -428,6 +428,7 @@ router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, 
     const id = req.body.id;
   
     if(id){
+      console.log('id:')
       console.log(id, title, image_name)
       // await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
