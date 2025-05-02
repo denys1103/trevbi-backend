@@ -4,6 +4,7 @@ const HistoryActiveUser = require('../models/historyActiveUser');
 const ingredientsToAvoid = require('../models/ingredientsToAvoid');
 const RecipeList = require('../models/recipeList');
 const Feedback = require('../models/feedback');
+const MessageBoard = require('../models/messageBoard');
 const sgMail = require('@sendgrid/mail');
 const OpenAI = require('openai');
 var md5 = require('md5');
@@ -581,6 +582,19 @@ exports.updateRecipe = async (req, res) => {
     const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });;
   
     res.json({ success: true, recipes, message: 'Update Recipe successfully!' });
+  }
+};
+
+exports.getMyPostList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board });
   }
 };
 
