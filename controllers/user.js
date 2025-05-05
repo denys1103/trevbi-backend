@@ -463,13 +463,33 @@ exports.followRequest = async (req, res) => {
         .json({ success: false, message: token });
     }
     
-    const { id } = req.body;
+    const { id, status } = req.body;
     const user = await User.findById(req.user._id);
     const targetUser = await User.findById(id);
     try {
-      if (!user.following.includes(targetUser._id)) {
+      if (!user.following.includes(targetUser._id) && status < 1) {
         user.following.push(targetUser._id);
-        targetUser.followers.push(user._id);
+        if (!targetUser.followers.includes(user._id)) {
+          targetUser.followers.push(user._id);
+        }
+        await User.findByIdAndUpdate(req.user._id, {
+          following: user.following,
+        });
+        await User.findByIdAndUpdate(targetUser._id, {
+          followers: targetUser.followers,
+        });
+      }
+      if (user.following.includes(targetUser._id) && status > 0) {
+        let index = user.following.indexOf(targetUser._id);
+        if (index > -1) {
+          user.following.splice(index, 1);
+        }
+        if (targetUser.followers.includes(user._id)) {
+          index = targetUser.followers.indexOf(user._id);
+          if (index > -1) {
+            targetUser.followers.splice(index, 1);
+          }
+        }
         await User.findByIdAndUpdate(req.user._id, {
           following: user.following,
         });
