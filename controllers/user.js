@@ -538,7 +538,7 @@ exports.getFriendList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const user = await User.findById(req.user._id);
-    const friends = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1});
+    const friends = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
   
     res.json({ success: true, friends });
   }
