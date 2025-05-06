@@ -566,7 +566,7 @@ exports.getRecipeList = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });;
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });
   
     res.json({ success: true, recipes });
   }
@@ -584,7 +584,7 @@ exports.delRecipe = async (req, res) => {
     if(recipeId){
       await RecipeList.deleteOne({_id: recipeId});
     }
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });;
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });
     res.json({ success: true, message: 'Remove recipe successfully!', recipes });
   }
 };
@@ -599,7 +599,7 @@ exports.updateRecipe = async (req, res) => {
     }
     const recipeId = req.body[0]._id;
     await RecipeList.findByIdAndUpdate(recipeId, { ...req.body[0] });
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });;
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });
   
     res.json({ success: true, recipes, message: 'Update Recipe successfully!' });
   }
@@ -614,6 +614,21 @@ exports.getMyPostList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    res.json({ success: true, myposts: message_board });
+  }
+};
+
+exports.getPostList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const message_board = await MessageBoard.find({ status: 1 })
+    .populate('userid', 'fullname avatar')
+    .sort({_id: -1 });
     res.json({ success: true, myposts: message_board });
   }
 };

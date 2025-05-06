@@ -71,6 +71,7 @@ router.post('/get-recipes', isAuth, getRecipeList);
 router.post('/del-recipe', isAuth, delRecipe);
 router.post('/update-recipe', isAuth, updateRecipe);
 router.post('/get-myposts', isAuth, getMyPostList);
+router.post('/get-posts', isAuth, getPostList);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists
