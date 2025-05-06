@@ -644,7 +644,7 @@ exports.updateLike = async (req, res) => {
     const {id, status} = req.body[0];
     const like_result = await MessageBoard.findOne({ $and: [{ '_id': id }, { status: 1 }, { 'like': req.user._id }] }).select({"like": 1});
     // const unlike_result = await MessageBoard.findOne({ $and: [{ '_id': id }, { status: 1 }, { 'unlike': req.user._id }] }).select({"like": 1});
-    if(status == 1){
+    if(status < 1){
       if(like_result){
         res.json({ success: true, post: {}, message: 'Already recommended this post.' });
       }else{
