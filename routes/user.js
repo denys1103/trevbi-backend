@@ -38,6 +38,7 @@ const {
   delRecipe,
   updateRecipe,
   getMyPostList,
+  getPostList,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
