@@ -629,7 +629,7 @@ exports.getPostList = async (req, res) => {
     const message_board = await MessageBoard.find({ status: 1 })
     .populate('userid', 'fullname avatar')
     .sort({_id: -1 });
-    res.json({ success: true, myposts: message_board });
+    res.json({ success: true, posts: message_board });
   }
 };
 
