@@ -633,6 +633,34 @@ exports.getPostList = async (req, res) => {
   }
 };
 
+exports.updateLike = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const {id, status} = req.body[0];
+    const like_result = await MessageBoard.findOne({ $and: [{ '_id': id }, { status: 1 }, { 'like': req.user._id }] }).select({"like": 1});
+    // const unlike_result = await MessageBoard.findOne({ $and: [{ '_id': id }, { status: 1 }, { 'unlike': req.user._id }] }).select({"like": 1});
+    if(status == 1){
+      if(like_result){
+        res.json({ success: true, post: {}, message: 'Already recommended this post.' });
+      }else{
+        const post = await MessageBoard.findByIdAndUpdate(id, {$addToSet:{ like: req.user._id }}, {safe: true, upsert: true, new : true},);
+        res.json({ success: true, post, message: 'Recommended this post.' });
+      }
+    }else{
+      if(like_result){
+        res.json({ success: true, post: {}, message: 'Already recommended this post.' });
+      }else{
+        res.json({ success: true, post: {}, message: 'Already recommended this post.' });
+      }
+    }
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
