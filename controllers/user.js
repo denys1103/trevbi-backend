@@ -643,10 +643,10 @@ exports.updateLike = async (req, res) => {
     }
     const {id, status} = req.body[0];
     const like_result = await MessageBoard.findOne({ $and: [{ '_id': id }, { status: 1 }, { 'like': req.user._id }] }).select({"like": 1});
-    // const unlike_result = await MessageBoard.findOne({ $and: [{ '_id': id }, { status: 1 }, { 'unlike': req.user._id }] }).select({"like": 1});
     if(status < 1){
       if(like_result){
-        res.json({ success: true, post: {}, message: 'Already recommended this post.' });
+        const post = await MessageBoard.updateOne(id, {$pull: {like: req.user._id}});
+        res.json({ success: true, post, message: 'Removed this recommend.' });
       }else{
         const post = await MessageBoard.findByIdAndUpdate(id, {$addToSet:{ like: req.user._id }}, {safe: true, upsert: true, new : true},);
         res.json({ success: true, post, message: 'Recommended this post.' });
