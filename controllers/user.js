@@ -448,7 +448,7 @@ exports.getUsers = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const users = await User.find({}).select({ "fullname": 1, "avatar": 1, 'following': 1, 'bio': 1});
+    const users = await User.find({ email: { $ne: 'admin@gmail.com' }, status: 1}).select({ "fullname": 1, "avatar": 1, 'following': 1, 'bio': 1});
   
     res.json({ success: true, users });
   }
