@@ -41,6 +41,7 @@ const {
   getPostList,
   updateLike,
   saveSwitch,
+  getUserPostList,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -77,6 +78,7 @@ router.post('/get-myposts', isAuth, getMyPostList);
 router.post('/get-posts', isAuth, getPostList);
 router.post('/update-like', isAuth, updateLike);
 router.post('/save-switch', isAuth, saveSwitch);
+router.post('/get-userposts', isAuth, getUserPostList);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists

@@ -681,6 +681,21 @@ exports.saveSwitch = async (req, res) => {
   }
 };
 
+exports.getUserPostList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { id } = req.body;
+    console.log(id);
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] });
+    res.json({ success: true, userposts: message_board });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
