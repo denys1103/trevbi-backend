@@ -40,6 +40,7 @@ const {
   getMyPostList,
   getPostList,
   updateLike,
+  saveSwitch,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -75,6 +76,7 @@ router.post('/update-recipe', isAuth, updateRecipe);
 router.post('/get-myposts', isAuth, getMyPostList);
 router.post('/get-posts', isAuth, getPostList);
 router.post('/update-like', isAuth, updateLike);
+router.post('/save-switch', isAuth, saveSwitch);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists
@@ -390,6 +392,7 @@ router.post("/upload-avata", isAuth, img_upload.single('file'), async (req, res,
     bio: user.bio,
     avatar: user.avatar ? user.avatar : '',
     following: user.following,
+    switchObj: user.isshow,
   };
 
   res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });

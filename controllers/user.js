@@ -121,6 +121,7 @@ exports.userSignIn = async (req, res) => {
     bio: user.bio,
     avatar: user.avatar ? user.avatar : '',
     following: user.following,
+    switchObj: user.isshow,
   };
 
   res.json({ success: true, user: userInfo, token });
@@ -415,6 +416,7 @@ exports.uploadProfile = async (req, res) => {
       bio: user.bio,
       avatar: user.avatar ? user.avatar : '',
       following: user.following,
+      switchObj: user.isshow,
     };
   
     res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });
@@ -508,6 +510,7 @@ exports.followRequest = async (req, res) => {
         bio: user.bio,
         avatar: user.avatar ? user.avatar : '',
         following: user.following,
+        switchObj: user.isshow,
       };
 
       res.json({ success: true, user: userInfo });
@@ -523,6 +526,7 @@ exports.followRequest = async (req, res) => {
         bio: user.bio,
         avatar: user.avatar ? user.avatar : '',
         following: user.following,
+        switchObj: user.isshow,
       };
       res.json({ success: true, user: userInfo });
     }
@@ -658,6 +662,22 @@ exports.updateLike = async (req, res) => {
         res.json({ success: true, post: {}, message: 'Already recommended this post.' });
       }
     }
+  }
+};
+
+exports.saveSwitch = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    await User.findByIdAndUpdate(req.user._id, { isshow: {...req.body[0]} });
+    const user = await User.findById(req.user._id);
+    const switchObj = user.isshow;
+  
+    res.json({ success: true, switchObj, message: 'Upload switch successfully!' });
   }
 };
 

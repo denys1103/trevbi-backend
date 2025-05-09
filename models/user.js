@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
   phone_num: String,
   bio: String,
   tokens: [{ type: Object }],
+  isshow: { type: Object },
   status: {
     type: Number,
     default: 0,
