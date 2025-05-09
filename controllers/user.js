@@ -631,7 +631,7 @@ exports.getPostList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const message_board = await MessageBoard.find({ status: 1 })
-    .populate('userid', 'fullname avatar')
+    .populate('userid', 'fullname avatar bio')
     .sort({_id: -1 });
     res.json({ success: true, posts: message_board });
   }
