@@ -431,7 +431,6 @@ exports.saveFeedback = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    console.log('feedback data:', req.body[0])
     const feedback = await Feedback({
       ...req.body[0],
       userid: req.user._id,
@@ -690,7 +689,6 @@ exports.getUserPostList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const { id } = req.body;
-    console.log(id);
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] })
     .populate('userid', 'fullname avatar');
     res.json({ success: true, userposts: message_board });
