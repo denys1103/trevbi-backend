@@ -6,7 +6,9 @@ exports.isAuth = async (req, res, next) => {
     const token = req.headers.authorization;
 
     try {
+      console.log('isAuth-try');
       const decode = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('decode.userId', decode.userId);
       const user = await User.findById(decode.userId);
       if (!user) {
         return res.json({ success: false, message: 'unauthorized access!' });
@@ -15,6 +17,7 @@ exports.isAuth = async (req, res, next) => {
       req.user = user;
       next();
     } catch (error) {
+      console.log('isAuth-error', error);
       if (error.name === 'JsonWebTokenError') {
         return res.json({ success: false, message: 'unauthorized access!' });
       }

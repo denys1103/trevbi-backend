@@ -612,11 +612,14 @@ exports.updateRecipe = async (req, res) => {
 exports.getMyPostList = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
+    console.log('getMyPostList-start');
     if (!token) {
+      console.log('getMyPostList-token-err');
       return res
         .status(401)
         .json({ success: false, message: token });
     }
+    console.log('getMyPostList-sussess');
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
     res.json({ success: true, myposts: message_board });
   }
