@@ -691,7 +691,8 @@ exports.getUserPostList = async (req, res) => {
     }
     const { id } = req.body;
     console.log(id);
-    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] });
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] })
+    .populate('userid', 'fullname avatar');
     res.json({ success: true, userposts: message_board });
   }
 };
