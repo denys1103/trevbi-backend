@@ -618,10 +618,7 @@ exports.getMyPostList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
-    return res
-        .status(200)
-        .json({ success: true, myposts: message_board });
-    // res.json({ success: true, myposts: message_board });
+    res.json({ success: true, myposts: message_board });
   }
 };
 
