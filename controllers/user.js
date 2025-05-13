@@ -695,6 +695,38 @@ exports.getUserPostList = async (req, res) => {
   }
 };
 
+exports.getUserCrewList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { id } = req.body;
+    const user = await User.findById(id);
+    const CrewList = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+  
+    res.json({ success: true, CrewList });
+  }
+};
+
+exports.getUserMemberList = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { id } = req.body;
+    const user = await User.findById(id);
+    const MemberList = await User.find({_id: { "$in": user.followers }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+  
+    res.json({ success: true, MemberList });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
