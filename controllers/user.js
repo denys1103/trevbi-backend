@@ -705,9 +705,9 @@ exports.getUserCrewList = async (req, res) => {
     }
     const { id } = req.body;
     const user = await User.findById(id);
-    const CrewList = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+    const users = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
   
-    res.json({ success: true, CrewList });
+    res.json({ success: true, users });
   }
 };
 
@@ -721,9 +721,9 @@ exports.getUserMemberList = async (req, res) => {
     }
     const { id } = req.body;
     const user = await User.findById(id);
-    const MemberList = await User.find({_id: { "$in": user.followers }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+    const users = await User.find({_id: { "$in": user.followers }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
   
-    res.json({ success: true, MemberList });
+    res.json({ success: true, users });
   }
 };
 
