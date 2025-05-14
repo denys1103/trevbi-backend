@@ -727,6 +727,21 @@ exports.getUserMemberList = async (req, res) => {
   }
 };
 
+exports.getUserData = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const { id } = req.body;
+    const user = await User.findById(id).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+  
+    res.json({ success: true, user });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
