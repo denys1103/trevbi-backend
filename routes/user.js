@@ -45,6 +45,7 @@ const {
   getUserCrewList,
   getUserMemberList,
   getUserData,
+  addComment,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -85,6 +86,7 @@ router.post('/get-userposts', isAuth, getUserPostList);
 router.post('/get-usercrews', isAuth, getUserCrewList);
 router.post('/get-usermembers', isAuth, getUserMemberList);
 router.post('/get-userdata', isAuth, getUserData);
+router.post('/add-comment', isAuth, addComment);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists

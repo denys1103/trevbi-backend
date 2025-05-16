@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const commentSchema = new mongoose.Schema({
+  userid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  comment: {
+    type: String,
+    required: true,
+  },
+}, { _id: false });
+
 const messageBoardSchema = new mongoose.Schema({
   userid: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +32,7 @@ const messageBoardSchema = new mongoose.Schema({
   },
   like: { type: [] },
   unlike: { type: [] },
-  comment: { type: [] },
+  comment: [commentSchema],
   date: {
     type: Date,
     default: Date.now,

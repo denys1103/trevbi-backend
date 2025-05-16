@@ -742,6 +742,31 @@ exports.getUserData = async (req, res) => {
   }
 };
 
+exports.addComment = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const {id, comment} = req.body[0];
+    const updatedPost = await MessageBoard.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          comment: {
+            userid: req.user._id,
+            comment,
+          },
+        },
+      },
+      { new: true }
+    );
+    res.json({ success: true, updatedPost, message: 'Commented this post.' });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
