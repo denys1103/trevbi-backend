@@ -616,7 +616,9 @@ exports.getMyPostList = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+    const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] })
+    .populate('comment.userid', 'fullname avatar')
+    .lean();
     res.json({ success: true, myposts: message_board });
   }
 };
@@ -631,7 +633,9 @@ exports.getPostList = async (req, res) => {
     }
     const message_board = await MessageBoard.find({ status: 1 })
     .populate('userid', 'fullname avatar bio')
-    .sort({_id: -1 });
+    .populate('comment.userid', 'fullname avatar')
+    .sort({_id: -1 })
+    .lean();
     res.json({ success: true, posts: message_board });
   }
 };
@@ -690,7 +694,9 @@ exports.getUserPostList = async (req, res) => {
     }
     const { id } = req.body;
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] })
-    .populate('userid', 'fullname avatar');
+    .populate('comment.userid', 'fullname avatar')
+    .populate('userid', 'fullname avatar')
+    .lean();
     res.json({ success: true, userposts: message_board });
   }
 };
@@ -762,7 +768,7 @@ exports.addComment = async (req, res) => {
         },
       },
       { new: true }
-    );
+    ).populate('comment.userid', 'fullname avatar');
     res.json({ success: true, updatedPost, message: 'Commented this post.' });
   }
 };
