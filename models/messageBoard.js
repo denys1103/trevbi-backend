@@ -10,7 +10,7 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-}, { _id: false });
+}, { _id: true });
 
 const messageBoardSchema = new mongoose.Schema({
   userid: {
