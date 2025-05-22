@@ -46,6 +46,8 @@ const {
   getUserMemberList,
   getUserData,
   addComment,
+  deleteComment,
+  updateComment,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
