@@ -773,6 +773,46 @@ exports.addComment = async (req, res) => {
   }
 };
 
+exports.deleteComment = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const {id, commentId} = req.body[0];
+    const updatedPost = await MessageBoard.findByIdAndUpdate(
+      id,
+      {
+        $pull: {
+          comment: { _id: commentId }
+        }
+      },
+      { new: true }
+    ).populate('comment.userid', 'fullname avatar');
+    res.json({ success: true, updatedPost, message: 'Removed this comment.' });
+  }
+};
+
+exports.updateComment = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: token });
+    }
+    const {id, commentId, comment} = req.body[0];
+    const updatedPost = await MessageBoard.findOneAndUpdate(
+      { _id: id, 'comment._id': commentId },
+      { $set: { 'comment.$.comment': comment } },
+      { new: true }
+    ).populate('comment.userid', 'fullname avatar');
+    res.json({ success: true, updatedPost, message: 'Updated this comment.' });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
