@@ -618,6 +618,7 @@ exports.getMyPostList = async (req, res) => {
     }
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] })
     .populate('comment.userid', 'fullname avatar')
+    .sort({_id: -1 })
     .lean();
     res.json({ success: true, myposts: message_board });
   }
@@ -696,6 +697,7 @@ exports.getUserPostList = async (req, res) => {
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] })
     .populate('comment.userid', 'fullname avatar')
     .populate('userid', 'fullname avatar')
+    .sort({_id: -1 })
     .lean();
     res.json({ success: true, userposts: message_board });
   }
