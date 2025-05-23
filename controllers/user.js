@@ -826,7 +826,7 @@ exports.updateCommentLike = async (req, res) => {
       _id: id,
       status: 1,
       'comment._id': commentId
-    });
+    }).populate('comment.userid', 'fullname avatar');
 
     if (!board) {
       return res.status(404).json({ success: false, message: 'MessageBoard or comment not found.' });
