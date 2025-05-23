@@ -813,6 +813,43 @@ exports.updateComment = async (req, res) => {
   }
 };
 
+exports.updateCommentLike = async (req, res) => {
+  try {
+    if (!req.headers || !req.headers.authorization) {
+      return res.status(401).json({ success: false, message: 'Authorization token missing.' });
+    }
+
+    const { id, commentId } = req.body[0];
+    const userId = req.user._id;
+
+    const board = await MessageBoard.findOne({
+      _id: id,
+      status: 1,
+      'comment._id': commentId
+    });
+
+    if (!board) {
+      return res.status(404).json({ success: false, message: 'MessageBoard or comment not found.' });
+    }
+
+    const comment = board.comment.id(commentId);
+    const alreadyLiked = comment.like.includes(userId);
+
+    if (alreadyLiked) {
+      comment.like.pull(userId);
+      await board.save();
+      return res.json({ success: true, message: 'Removed this recommend.', comment });
+    } else {
+      comment.like.addToSet(userId);
+      await board.save();
+      return res.json({ success: true, message: 'Recommended this comment.', comment });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error.', error: error.message });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;

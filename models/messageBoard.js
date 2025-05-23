@@ -10,6 +10,7 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  like: { type: [] },
 }, { _id: true });
 
 const messageBoardSchema = new mongoose.Schema({
