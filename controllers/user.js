@@ -838,11 +838,11 @@ exports.updateCommentLike = async (req, res) => {
     if (alreadyLiked) {
       comment.like.pull(userId);
       await board.save();
-      return res.json({ success: true, message: 'Removed this recommend.', comment });
+      return res.json({ success: true, message: 'Removed this recommend.', comment: board.comment });
     } else {
       comment.like.addToSet(userId);
       await board.save();
-      return res.json({ success: true, message: 'Recommended this comment.', comment });
+      return res.json({ success: true, message: 'Recommended this comment.', comment: board.comment });
     }
   } catch (error) {
     console.error(error);
