@@ -479,26 +479,36 @@ router.post("/upload-mediapost", isAuth, post_img_upload.array('media', MAX_MEDI
     if (!files) {
       res.json({ success: false, message: 'Upload Media failed!' });
     }
-    const mediaNames = files.map(f => f.originalname);
-    console.log('mediaNames:', mediaNames);
+    const mediaList = files.map(f => ({
+      name: f.filename,
+      mime: f.mimetype
+    }));
+    console.log('files:', JSON.stringify(files, null, 2));
+    if (!Array.isArray(mediaList) || mediaList.length === 0) {
+      res.json({ success: false, message: 'Upload Media failed!' });
+    }
   
     const title = req.body.title;
     const note = req.body.note;
     const id = req.body.id;
   
     if(id){
-      // await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
+      await MessageBoard.findByIdAndUpdate(
+        id,
+        { title, note },
+        { $push: { media: { $each: mediaList } } },
+      );
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
     }else{
-      // const MessageBoardData = await MessageBoard({
-      //   userid: req.user._id,
-      //   photo: image_name,
-      //   title,
-      //   note,
-      //   status: 1,   
-      // });
-      // await MessageBoardData.save();
+      const MessageBoardData = await MessageBoard({
+        userid: req.user._id,
+        media: mediaList,
+        title,
+        note,
+        status: 1,   
+      });
+      await MessageBoardData.save();
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
     }

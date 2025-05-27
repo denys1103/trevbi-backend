@@ -34,6 +34,7 @@ const messageBoardSchema = new mongoose.Schema({
   like: { type: [] },
   unlike: { type: [] },
   comment: [commentSchema],
+  media: [{ type: Object }],
   date: {
     type: Date,
     default: Date.now,
