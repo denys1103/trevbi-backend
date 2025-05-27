@@ -441,6 +441,7 @@ const postImgStorage = multer.diskStorage({
   }
 })
 const post_img_upload = multer({ storage: postImgStorage });
+const MAX_MEDIA = 10;
 router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) {
@@ -465,6 +466,39 @@ router.post("/upload-post", isAuth, post_img_upload.single('file'), async (req, 
         status: 1,   
       });
       await MessageBoardData.save();
+      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+      res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
+    }
+  } catch (error) {
+    console.log('Error processing post:', error);
+  }
+});
+router.post("/upload-mediapost", isAuth, post_img_upload.array('media', MAX_MEDIA), async (req, res, next) => {
+  try {
+    const files = req.files;
+    if (!files) {
+      res.json({ success: false, message: 'Upload Media failed!' });
+    }
+    const mediaNames = files.map(f => f.originalname);
+    console.log('mediaNames:', mediaNames);
+  
+    const title = req.body.title;
+    const note = req.body.note;
+    const id = req.body.id;
+  
+    if(id){
+      // await MessageBoard.findByIdAndUpdate(id, { title, note, photo: image_name });
+      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
+      res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
+    }else{
+      // const MessageBoardData = await MessageBoard({
+      //   userid: req.user._id,
+      //   photo: image_name,
+      //   title,
+      //   note,
+      //   status: 1,   
+      // });
+      // await MessageBoardData.save();
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Post successfully!' });
     }
