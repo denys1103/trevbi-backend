@@ -483,7 +483,6 @@ router.post("/upload-mediapost", isAuth, post_img_upload.array('media', MAX_MEDI
       name: f.filename,
       mime: f.mimetype
     }));
-    console.log('files:', JSON.stringify(files, null, 2));
     if (!Array.isArray(mediaList) || mediaList.length === 0) {
       res.json({ success: false, message: 'Upload Media failed!' });
     }
