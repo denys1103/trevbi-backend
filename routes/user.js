@@ -49,6 +49,7 @@ const {
   deleteComment,
   updateComment,
   updateCommentLike,
+  deletePost,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -93,6 +94,7 @@ router.post('/add-comment', isAuth, addComment);
 router.post('/del-comment', isAuth, deleteComment);
 router.post('/update-comment', isAuth, updateComment);
 router.post('/update-commentlike', isAuth, updateCommentLike);
+router.post('/del-post', isAuth, deletePost);
 router.post('/sign-out', isAuth, signOut);
 
 // Make sure uploads/images exists

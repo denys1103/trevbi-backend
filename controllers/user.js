@@ -852,6 +852,36 @@ exports.updateCommentLike = async (req, res) => {
   }
 };
 
+exports.deletePost = async (req, res) => {
+  try {
+    if (!req.headers || !req.headers.authorization) {
+      return res.status(401).json({ success: false, message: 'Authorization token missing.' });
+    }
+
+    const {id, isMyPost} = req.body[0];
+    if(id){
+      await MessageBoard.deleteOne({_id: id});
+    }
+    if(isMyPost) {
+      const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] })
+      .populate('comment.userid', 'fullname avatar')
+      .sort({_id: -1 })
+      .lean();
+      res.json({ success: true, postList: message_board, message: 'Removed this post.' });
+    }else{
+      const message_board = await MessageBoard.find({ status: 1 })
+      .populate('userid', 'fullname avatar bio')
+      .populate('comment.userid', 'fullname avatar')
+      .sort({_id: -1 })
+      .lean();
+      res.json({ success: true, postList: message_board, message: 'Removed this post.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error.', error: error.message });
+  }
+};
+
 exports.signOut = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
