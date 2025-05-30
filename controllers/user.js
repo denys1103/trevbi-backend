@@ -582,7 +582,7 @@ exports.getUserRecipeList = async (req, res) => {
     }
 
     const { userid } = req.body;
-    const recipes = await RecipeList.find({userid: userid, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
+    const recipes = await RecipeList.find({userid: userid, status: 1, cookbook: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
   
     res.json({ success: true, recipes });
   } catch (error) {
