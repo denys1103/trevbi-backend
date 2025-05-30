@@ -496,8 +496,10 @@ router.post("/upload-mediapost", isAuth, post_img_upload.array('media', MAX_MEDI
     if(id){
       await MessageBoard.findByIdAndUpdate(
         id,
-        { title, note },
-        { $push: { media: { $each: mediaList } } },
+        {
+          $set: { title, note },
+          $push: { media: { $each: mediaList } }
+        }
       );
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] });
       res.json({ success: true, myposts: message_board, message: 'Update successfully!' });
