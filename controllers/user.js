@@ -575,6 +575,22 @@ exports.getRecipeList = async (req, res) => {
   }
 };
 
+exports.getUserRecipeList = async (req, res) => {
+  try {
+    if (!req.headers || !req.headers.authorization) {
+      return res.status(401).json({ success: false, message: 'Authorization token missing.' });
+    }
+
+    const { userid } = req.body;
+    const recipes = await RecipeList.find({userid: userid, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
+  
+    res.json({ success: true, recipes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error.', error: error.message });
+  }
+};
+
 exports.delRecipe = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;

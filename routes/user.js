@@ -35,6 +35,7 @@ const {
   getFriendList,
   saveRecipe,
   getRecipeList,
+  getUserRecipeList,
   delRecipe,
   updateRecipe,
   getMyPostList,
@@ -81,6 +82,7 @@ router.post('/follow-request', isAuth, followRequest);
 router.post('/get-friends', isAuth, getFriendList);
 router.post('/save-recipe', isAuth, saveRecipe);
 router.post('/get-recipes', isAuth, getRecipeList);
+router.post('/get-userrecipes', isAuth, getUserRecipeList);
 router.post('/del-recipe', isAuth, delRecipe);
 router.post('/update-recipe', isAuth, updateRecipe);
 router.post('/get-myposts', isAuth, getMyPostList);
