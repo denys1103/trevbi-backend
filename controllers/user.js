@@ -569,7 +569,7 @@ exports.getRecipeList = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
   
     res.json({ success: true, recipes });
   }
@@ -587,7 +587,7 @@ exports.delRecipe = async (req, res) => {
     if(recipeId){
       await RecipeList.deleteOne({_id: recipeId});
     }
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
     res.json({ success: true, message: 'Remove recipe successfully!', recipes });
   }
 };
@@ -602,7 +602,7 @@ exports.updateRecipe = async (req, res) => {
     }
     const recipeId = req.body[0]._id;
     await RecipeList.findByIdAndUpdate(recipeId, { ...req.body[0] });
-    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1}).sort({_id: -1 });
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
   
     res.json({ success: true, recipes, message: 'Update Recipe successfully!' });
   }
@@ -876,6 +876,23 @@ exports.deletePost = async (req, res) => {
       .lean();
       res.json({ success: true, postList: message_board, message: 'Removed this post.' });
     }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error.', error: error.message });
+  }
+};
+
+exports.cookbookRequest = async (req, res) => {
+  try {
+    if (!req.headers || !req.headers.authorization) {
+      return res.status(401).json({ success: false, message: 'Authorization token missing.' });
+    }
+
+    const { recipeId, status } = req.body[0];
+    await RecipeList.findByIdAndUpdate(recipeId, { cookbook: status });
+    const recipes = await RecipeList.find({userid: req.user._id, status: 1}).select({ "title": 1, "img": 1, "text": 1, "servings": 1, "cookTime": 1, "cookbook": 1}).sort({_id: -1 });
+  
+    res.json({ success: true, recipes, message: 'Update Recipe successfully!' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Server error.', error: error.message });
