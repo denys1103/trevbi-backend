@@ -381,10 +381,6 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
       console.log('no file uploaded');
       res.json({ success: false, results:'' });
     }
-    const imagePath = path.join(__dirname, '..', req.file.path);
-    console.log(imagePath)
-    console.log(req.file.path)
-    // const imageBuffer = await fs.readFile(imagePath);
     fs.readFile(req.file.path, async (err, data) => {
       if (err) {
         console.error('File read error:', err);
@@ -406,6 +402,7 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
       }else{
         prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
       }
+      console.log(useAI, prompt);
 
       const contents = [
         { text: prompt },
