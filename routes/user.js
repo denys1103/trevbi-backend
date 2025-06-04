@@ -365,7 +365,7 @@ const recipeImgStorage = multer.diskStorage({
 })
 const recipe_img_upload = multer({ storage: recipeImgStorage });
 
-router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('file'), async (req, res) => {
+router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), async (req, res) => {
   try {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, '0');
