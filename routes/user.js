@@ -376,7 +376,10 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
       console.log('no file uploaded');
       res.json({ success: false, results:'' });
     }
-    const imageBuffer = req.file.buffer;
+    const imagePath = path.join(__dirname, '..', req.file.path);
+    console.log(req.file.path)
+    console.log(imagePath)
+    const imageBuffer = await fs.readFile(imagePath);
     let recipeImg = req.file.filename;
     const diets = req.body.diets;
     const ingredients = req.body.ingredients;
