@@ -112,6 +112,11 @@ if (!fs.existsSync(uploadPostDir)) {
   fs.mkdirSync(uploadPostDir, { recursive: true });
 }
 
+const uploadImagesDir = path.join(__dirname, '..', 'uploads', 'images',);
+if (!fs.existsSync(uploadImagesDir)) {
+  fs.mkdirSync(uploadImagesDir, { recursive: true });
+}
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 router.post('/getIngredientsForRecipe', upload.single('image'), async (req, res) => {
@@ -357,7 +362,7 @@ router.post('/makeMealRecipeV3', isAuth, upload.single('image'), async (req, res
 
 const recipeImgStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/recipeImgs/')
+    cb(null, uploadDir)
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '.' + file.originalname.split('.').pop())
@@ -378,7 +383,8 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
     }
     const imagePath = path.join(__dirname, '..', req.file.path);
     console.log(req.file.path)
-    console.log(imagePath)
+    console.log(req.file.filename)
+    console.log(req.file.mimetype)
     const imageBuffer = await fs.readFile(imagePath);
     let recipeImg = req.file.filename;
     const diets = req.body.diets;
@@ -476,7 +482,7 @@ router.post('/recipe', upload.single('image'), async (req, res) => {
 
 const imgStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/images/')
+    cb(null, uploadImagesDir)
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '.' + file.originalname.split('.').pop())
@@ -518,7 +524,7 @@ router.post("/upload-recipeimg", isAuth, recipe_img_upload.single('file'), async
 
 const postImgStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/postImgs/')
+    cb(null, uploadPostDir)
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '.' + file.originalname.split('.').pop())
