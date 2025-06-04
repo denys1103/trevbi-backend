@@ -382,8 +382,10 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
       res.json({ success: false, results:'' });
     }
     const imagePath = path.join(__dirname, '..', req.file.path);
+    console.log(imagePath)
+    console.log(req.file.path)
     // const imageBuffer = await fs.readFile(imagePath);
-    fs.readFile(imagePath, async (err, data) => {
+    fs.readFile(req.file.path, async (err, data) => {
       if (err) {
         console.error('File read error:', err);
         return res.status(500).json({ success: false, error: 'File read error' });
