@@ -355,6 +355,90 @@ router.post('/makeMealRecipeV3', isAuth, upload.single('image'), async (req, res
   }
 });
 
+const recipeImgStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/recipeImgs/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '.' + file.originalname.split('.').pop())
+  }
+})
+const recipe_img_upload = multer({ storage: recipeImgStorage });
+
+router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('file'), async (req, res) => {
+  try {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    console.log(`Date: ${day} - ${hour}:${minute}, diets: ${req.body.diets}`);
+    if (!req.file) {
+      console.log('no file uploaded');
+      res.json({ success: false, results:'' });
+    }
+    const imageBuffer = req.file.buffer;
+    let recipeImg = req.file.filename;
+    const diets = req.body.diets;
+    const ingredients = req.body.ingredients;
+    const meal = req.body.meal;
+    const useAI = req.body.useAI;
+    let prompt = '';
+    if(meal){
+      if(meal=='bake'){
+        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }else{
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+      }
+    }else{
+      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+    }
+
+    const contents = [
+      { text: prompt },
+      {
+        inlineData: {
+          data: imageBuffer.toString("base64"),
+          mimeType: req.file.mimetype,
+        },
+      },
+    ];
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-exp-image-generation",
+      contents: contents,
+      config: {
+        responseModalities: useAI ? ["Text", "Image"] : ["Text"],
+      },
+    });
+    let recipeText = '';
+    for (const part of response.candidates[0].content.parts) {
+      if (part.text) {
+        recipeText = part.text;
+      } else if (part.inlineData) {
+        const imageData = part.inlineData.data;
+        const buffer = Buffer.from(imageData, "base64");
+        const filename = `gen_${Date.now()}.png`;
+        const filepath = path.join(uploadDir, filename);
+
+        fs.writeFileSync(filepath, buffer);
+        recipeImg = filename;
+      }
+    }
+    const recipe = await RecipeList({
+      userid: req.user._id,
+      title: '',
+      img: recipeImg,
+      text: recipeText,
+    });
+    await recipe.save();
+
+    res.json({ success: true, results:{recipeText, recipeImg, recipeId: recipe._id} });
+
+  } catch (error) {
+    console.log('Error processing recipe:', error);
+    res.json({ success: false, results:{recipeText: '', recipeImg: ''} });
+  }
+});
+
 router.post('/recipe', upload.single('image'), async (req, res) => {
   try {
     const date = new Date();
@@ -420,15 +504,6 @@ router.post("/upload-avata", isAuth, img_upload.single('file'), async (req, res,
   res.json({ success: true, user: userInfo, message: 'Upload Profile successfully!' });
 });
 
-const recipeImgStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/recipeImgs/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '.' + file.originalname.split('.').pop())
-  }
-})
-const recipe_img_upload = multer({ storage: recipeImgStorage });
 router.post("/upload-recipeimg", isAuth, recipe_img_upload.single('file'), async (req, res, next) => {
   if (!req.file) {
     res.json({ success: false, message: 'Upload Photo File failed!' });
