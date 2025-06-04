@@ -382,66 +382,69 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
       res.json({ success: false, results:'' });
     }
     const imagePath = path.join(__dirname, '..', req.file.path);
-    console.log(req.file.path)
-    console.log(req.file.filename)
-    console.log(req.file.mimetype)
-    const imageBuffer = await fs.readFile(imagePath);
-    let recipeImg = req.file.filename;
-    const diets = req.body.diets;
-    const ingredients = req.body.ingredients;
-    const meal = req.body.meal;
-    const useAI = req.body.useAI;
-    let prompt = '';
-    if(meal){
-      if(meal=='bake'){
-        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+    // const imageBuffer = await fs.readFile(imagePath);
+    fs.readFile(imagePath, async (err, data) => {
+      if (err) {
+        console.error('File read error:', err);
+        return res.status(500).json({ success: false, error: 'File read error' });
+      }
+      const imageBuffer = data;
+      let recipeImg = req.file.filename;
+      const diets = req.body.diets;
+      const ingredients = req.body.ingredients;
+      const meal = req.body.meal;
+      const useAI = req.body.useAI;
+      let prompt = '';
+      if(meal){
+        if(meal=='bake'){
+          prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+        }else{
+          prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+        }
       }else{
-        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
       }
-    }else{
-      prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
-    }
 
-    const contents = [
-      { text: prompt },
-      {
-        inlineData: {
-          data: imageBuffer.toString("base64"),
-          mimeType: req.file.mimetype,
+      const contents = [
+        { text: prompt },
+        {
+          inlineData: {
+            data: imageBuffer.toString("base64"),
+            mimeType: req.file.mimetype,
+          },
         },
-      },
-    ];
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp-image-generation",
-      contents: contents,
-      config: {
-        responseModalities: useAI ? ["Text", "Image"] : ["Text"],
-      },
-    });
-    let recipeText = '';
-    for (const part of response.candidates[0].content.parts) {
-      if (part.text) {
-        recipeText = part.text;
-      } else if (part.inlineData) {
-        const imageData = part.inlineData.data;
-        const buffer = Buffer.from(imageData, "base64");
-        const filename = `gen_${Date.now()}.png`;
-        const filepath = path.join(uploadDir, filename);
+      ];
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash-exp-image-generation",
+        contents: contents,
+        config: {
+          responseModalities: useAI ? ["Text", "Image"] : ["Text"],
+        },
+      });
+      let recipeText = '';
+      for (const part of response.candidates[0].content.parts) {
+        if (part.text) {
+          recipeText = part.text;
+        } else if (part.inlineData) {
+          const imageData = part.inlineData.data;
+          const buffer = Buffer.from(imageData, "base64");
+          const filename = `gen_${Date.now()}.png`;
+          const filepath = path.join(uploadDir, filename);
 
-        fs.writeFileSync(filepath, buffer);
-        recipeImg = filename;
+          fs.writeFileSync(filepath, buffer);
+          recipeImg = filename;
+        }
       }
-    }
-    const recipe = await RecipeList({
-      userid: req.user._id,
-      title: '',
-      img: recipeImg,
-      text: recipeText,
+      const recipe = await RecipeList({
+        userid: req.user._id,
+        title: '',
+        img: recipeImg,
+        text: recipeText,
+      });
+      await recipe.save();
+
+      res.json({ success: true, results:{recipeText, recipeImg, recipeId: recipe._id} });
     });
-    await recipe.save();
-
-    res.json({ success: true, results:{recipeText, recipeImg, recipeId: recipe._id} });
-
   } catch (error) {
     console.log('Error processing recipe:', error);
     res.json({ success: false, results:{recipeText: '', recipeImg: ''} });
