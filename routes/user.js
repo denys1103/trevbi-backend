@@ -395,14 +395,13 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
       let prompt = '';
       if(meal){
         if(meal=='bake'){
-          prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+          prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
         }else{
-          prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+          prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. This is for ${meal}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
         }
       }else{
-        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Generate a recipe, cook information(yield, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with \"Here’s a recipe based on the ingredients detected in your photo.\n\n\"`;
       }
-      console.log(useAI, prompt);
 
       const contents = [
         { text: prompt },
@@ -417,7 +416,7 @@ router.post('/makeMealRecipeV4', isAuth, recipe_img_upload.single('image'), asyn
         model: "gemini-2.0-flash-exp-image-generation",
         contents: contents,
         config: {
-          responseModalities: useAI ? ["Text", "Image"] : ["Text"],
+          responseModalities: useAI > 0 ? ["Text", "Image"] : ["Text"],
         },
       });
       let recipeText = '';
