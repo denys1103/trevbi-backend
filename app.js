@@ -43,6 +43,16 @@ app.use((req, res, next) => {
 });
 
 app.use('/admin', adminRouter);
+//socket
+const http = require("http").Server(app);
+
+const io = require('socket.io')(http, { cors: { origin: '*' } });
+global.io = io;
+global.appRoot = path.resolve(__dirname);
+
+app.use(cors({ origin: '*' }));
+require('./controllers/socketController')(io);
+
 app.get('/', (req, res) => {
   res.render('pages/welcome');
 });
@@ -62,7 +72,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-const http = require("http").Server(app);
 
 http.listen(3000, () => {
   console.log('port is listening');
