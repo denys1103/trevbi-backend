@@ -2,6 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 require('dotenv').config();
 require('./models/db');
+const cors = require("cors");
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
