@@ -10,7 +10,6 @@ module.exports = (io) => {
       if (!global.curInterval) global.curInterval = {}
 
       socket.on("connected", ({ user, client_id, client_secret }) => {
-        console.log(!checkSecret(client_id, client_secret));
         if (!checkSecret(client_id, client_secret)) {
           socket.emit("user-disconnected", { error: "credentional mismatch" });
           socket.leave(`room_${user.id}`);

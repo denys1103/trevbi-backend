@@ -23,15 +23,19 @@ const checkSecret = (client_id, client_secret) => {
 }
 
 const emitOneUser = async (userid, key, data) => {
-    const isOn = global.io.sockets.adapter.rooms.get(`room_${userid}`);
+    const room = `room_${userid}`;
+    const isOn = global.io.sockets.adapter.rooms.get(room);
+  
     if (isOn && isOn.size > 0) {
-        isOn.forEach(item => {
-            console.log("emit", item, `room_${userid}`, key)
-            global.io.to(item).emit(key, data);
-        });
+      console.log(`Emitting to ${room}:`, key, data);
+      global.io.to(room).emit(key, data);
+    } else {
+      console.log(`Room ${room} not found or empty`);
     }
+  
     return true;
-}
+};
+
 module.exports = {
     getUser, checkSecret, checkHeader, emitOneUser
 }
