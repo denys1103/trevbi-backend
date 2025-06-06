@@ -16,7 +16,6 @@ const checkHeader = (req, res, next) => {
     else res.status(401).send('Invalid credentional');
 }
 const checkSecret = (client_id, client_secret) => {
-    console.log(client_id, client_secret);
     // return true;
     if (client_id == 'trevbi_client_id' && client_secret == 'trevbi_client_secret') return true;
     return false;
