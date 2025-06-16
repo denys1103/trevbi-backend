@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
   birth: String,
   phone_num: String,
   bio: String,
+  cookBookName: String,
   tokens: [{ type: Object }],
   isshow: { type: Object },
   status: {

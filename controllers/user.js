@@ -119,6 +119,7 @@ exports.userSignIn = async (req, res) => {
     birth: user.birth,
     phone_num: user.phone_num,
     bio: user.bio,
+    cookBookName: user.cookBookName,
     avatar: user.avatar ? user.avatar : '',
     following: user.following,
     switchObj: user.isshow,
@@ -414,6 +415,7 @@ exports.uploadProfile = async (req, res) => {
       birth: user.birth,
       phone_num: user.phone_num,
       bio: user.bio,
+      cookBookName: user.cookBookName,
       avatar: user.avatar ? user.avatar : '',
       following: user.following,
       switchObj: user.isshow,
@@ -509,6 +511,7 @@ exports.followRequest = async (req, res) => {
         birth: user.birth,
         phone_num: user.phone_num,
         bio: user.bio,
+        cookBookName: user.cookBookName,
         avatar: user.avatar ? user.avatar : '',
         following: user.following,
         switchObj: user.isshow,
@@ -525,6 +528,7 @@ exports.followRequest = async (req, res) => {
         birth: user.birth,
         phone_num: user.phone_num,
         bio: user.bio,
+        cookBookName: user.cookBookName,
         avatar: user.avatar ? user.avatar : '',
         following: user.following,
         switchObj: user.isshow,
@@ -651,7 +655,7 @@ exports.getPostList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const message_board = await MessageBoard.find({ status: 1 })
-    .populate('userid', 'fullname avatar bio')
+    .populate('userid', 'fullname avatar bio cookBookName')
     .populate('comment.userid', 'fullname avatar')
     .sort({_id: -1 })
     .lean();
