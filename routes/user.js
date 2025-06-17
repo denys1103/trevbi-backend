@@ -530,6 +530,87 @@ router.post('/makeMealRecipeV5', isAuth, recipe_img_upload.single('image'), asyn
   }
 });
 
+router.post('/makeMealRecipeV6', isAuth, recipe_img_upload.single('image'), async (req, res) => {
+  try {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    console.log(`Date: ${day} - ${hour}:${minute}`);
+    if (!req.file) {
+      console.log('no file uploaded');
+      res.json({ success: false, results:'' });
+    }
+    fs.readFile(req.file.path, async (err, data) => {
+      if (err) {
+        console.error('File read error:', err);
+        return res.status(500).json({ success: false, error: 'File read error' });
+      }
+      const imageBuffer = data;
+      let recipeImg = req.file.filename;
+      const diets = req.body.diets;
+      const ingredients = req.body.ingredients;
+      const meal = req.body.meal;
+      const useAI = req.body.useAI;
+      const servings = req.body.servings;
+      let prompt = '';
+      if(meal){
+        if(meal=='bake'){
+          prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with the recipe title and add ! to the end of the recipe title.`;
+        }else{
+          prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with the recipe title and add ! to the end of the recipe title.`;
+        }
+      }else{
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with the recipe title and add ! to the end of the recipe title.`;
+      }
+
+      const contents = [
+        { text: prompt },
+        {
+          inlineData: {
+            data: imageBuffer.toString("base64"),
+            mimeType: req.file.mimetype,
+          },
+        },
+      ];
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash-exp-image-generation",
+        contents: contents,
+        config: {
+          responseModalities: useAI > 0 ? ["Text", "Image"] : ["Text"],
+        },
+      });
+      let recipeText = '';
+      for (const part of response.candidates[0].content.parts) {
+        if (part.text) {
+          recipeText = part.text;
+        } else if (part.inlineData) {
+          const imageData = part.inlineData.data;
+          const buffer = Buffer.from(imageData, "base64");
+          const filename = `gen_${Date.now()}.png`;
+          const filepath = path.join(uploadDir, filename);
+
+          fs.writeFileSync(filepath, buffer);
+          recipeImg = filename;
+        }
+      }
+      const recipe = await RecipeList({
+        userid: req.user._id,
+        title: '',
+        img: recipeImg,
+        text: recipeText,
+        servings: servings,
+      });
+      await recipe.save();
+
+      res.json({ success: true, results:{recipeText, recipeImg, recipeId: recipe._id} });
+    });
+  } catch (error) {
+    console.log('Error processing recipe:', error);
+    res.json({ success: false, results:{recipeText: '', recipeImg: ''} });
+  }
+});
+
 router.post('/recipe', upload.single('image'), async (req, res) => {
   try {
     const date = new Date();
