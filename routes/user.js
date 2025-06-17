@@ -34,6 +34,7 @@ const {
   followRequest,
   getFriendList,
   saveRecipe,
+  saveRecipeV2,
   getRecipeList,
   getUserRecipeList,
   delRecipe,
@@ -81,6 +82,7 @@ router.post('/get-users', isAuth, getUsers);
 router.post('/follow-request', isAuth, followRequest);
 router.post('/get-friends', isAuth, getFriendList);
 router.post('/save-recipe', isAuth, saveRecipe);
+router.post('/save-recipeV2', isAuth, saveRecipeV2);
 router.post('/get-recipes', isAuth, getRecipeList);
 router.post('/get-userrecipes', isAuth, getUserRecipeList);
 router.post('/del-recipe', isAuth, delRecipe);
@@ -598,7 +600,7 @@ router.post('/makeMealRecipeV6', isAuth, recipe_img_upload.single('image'), asyn
         userid: req.user._id,
         title: '',
         img: recipeImg,
-        text: recipeText,
+        text: 'Here’s a recipe based on the ingredients detected in your photo.\n\n' + recipeText,
         servings: servings,
       });
       await recipe.save();

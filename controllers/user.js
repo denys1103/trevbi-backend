@@ -567,6 +567,21 @@ exports.saveRecipe = async (req, res) => {
   }
 };
 
+exports.saveRecipeV2 = async (req, res) => {
+  try {
+    if (!req.headers || !req.headers.authorization) {
+      return res.status(401).json({ success: false, message: 'Authorization token missing.' });
+    }
+
+    const { recipeId, recipeTitle } = req.body;
+    await RecipeList.findByIdAndUpdate(recipeId, { status: 1, title: recipeTitle });
+    res.json({ success: true, message: 'Save recipe successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error.', error: error.message });
+  }
+};
+
 exports.getRecipeList = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const token = req.headers.authorization;
