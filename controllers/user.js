@@ -451,7 +451,7 @@ exports.getUsers = async (req, res) => {
         .status(401)
         .json({ success: false, message: token });
     }
-    const users = await User.find({ email: { $ne: 'admin@gmail.com' }, status: 1}).select({ "fullname": 1, "avatar": 1, 'following': 1, 'bio': 1});
+    const users = await User.find({ email: { $ne: 'admin@gmail.com' }, status: 1}).select({ "fullname": 1, "avatar": 1, 'following': 1, 'bio': 1, 'cookBookName': 1});
   
     res.json({ success: true, users });
   }
@@ -547,7 +547,7 @@ exports.getFriendList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const user = await User.findById(req.user._id);
-    const friends = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+    const friends = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1, 'cookBookName': 1});
   
     res.json({ success: true, friends });
   }
@@ -750,7 +750,7 @@ exports.getUserCrewList = async (req, res) => {
     }
     const { id } = req.body;
     const user = await User.findById(id);
-    const users = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+    const users = await User.find({_id: { "$in": user.following }}).select({ "fullname": 1, "avatar": 1, 'bio': 1, 'cookBookName': 1});
   
     res.json({ success: true, users });
   }
@@ -766,7 +766,7 @@ exports.getUserMemberList = async (req, res) => {
     }
     const { id } = req.body;
     const user = await User.findById(id);
-    const users = await User.find({_id: { "$in": user.followers }}).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+    const users = await User.find({_id: { "$in": user.followers }}).select({ "fullname": 1, "avatar": 1, 'bio': 1, 'cookBookName': 1});
   
     res.json({ success: true, users });
   }
@@ -781,7 +781,7 @@ exports.getUserData = async (req, res) => {
         .json({ success: false, message: token });
     }
     const { id } = req.body;
-    const user = await User.findById(id).select({ "fullname": 1, "avatar": 1, 'bio': 1});
+    const user = await User.findById(id).select({ "fullname": 1, "avatar": 1, 'bio': 1, 'cookBookName': 1});
   
     res.json({ success: true, user });
   }
