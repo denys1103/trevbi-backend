@@ -680,7 +680,7 @@ router.post('/makeMealRecipeV7', isAuth, recipe_img_upload.single('image'), asyn
 
       const recipeAllText = recipeText;
       const recipeAllTextArr = recipeAllText
-        .replace(/\*/g, '')
+        .replace(/[*#]/g, '')
         .split('!');
       const getRecipeTitle = recipeAllTextArr[0] || '';
       const recipeContents = recipeAllTextArr.slice(1).join('!').replace(/^\n+/, '');
