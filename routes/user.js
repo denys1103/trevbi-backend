@@ -139,7 +139,7 @@ router.post('/getIngredientsForRecipe', upload.single('image'), async (req, res)
 
     const result = await model.generateContent([prompt, image]);
     const response = result.response.candidates[0].content.parts[0].text;
-    res.json({ success: true, results:response });
+    res.json({ success: true, results:response.replace(/[*#]/g, '') });
 
   } catch (error) {
     console.log('Error processing get ingredients for recipe:', error);
