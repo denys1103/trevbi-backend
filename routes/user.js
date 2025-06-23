@@ -644,7 +644,6 @@ router.post('/makeMealRecipeV7', isAuth, recipe_img_upload.single('image'), asyn
       } else {
         prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'ingredients list, and one recipe results image.' : 'and ingredients list.'} Start with the recipe title and add ! to the end of the recipe title. (Don't start with something like, "Here's the recipe based on the image provided.")`;
       }
-      console.log('prompt', prompt)
 
       const contents = [
         { text: prompt },
