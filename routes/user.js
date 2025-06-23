@@ -637,16 +637,13 @@ router.post('/makeMealRecipeV7', isAuth, recipe_img_upload.single('image'), asyn
       const useAI = req.body.useAI;
       const servings = req.body.servings;
       let prompt = '';
-      if(meal){
-        if(meal=='bake'){
-          prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with the recipe title and add ! to the end of the recipe title.`;
-        }else{
-          prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with the recipe title and add ! to the end of the recipe title.`;
-        }
-      }else{
-        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'a list of ingredients, and one recipe results image.' : 'and a list of ingredients.'} Start with the recipe title and add ! to the end of the recipe title.`;
+      if (meal === 'bake') {
+        prompt = `Dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'ingredients list, and one recipe results image.' : 'and ingredients list.'} Start with the recipe title and add ! to the end of the recipe title. (Don't start with something like, "Here's the recipe based on the image provided.")`;
+      } else if (!meal || meal.trim() === '' || meal === 'null' || meal === 'undefined') {
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'ingredients list, and one recipe results image.' : 'and ingredients list.'} Start with the recipe title and add ! to the end of the recipe title. (Don't start with something like, "Here's the recipe based on the image provided.")`;
+      } else {
+        prompt = `Given this food image and dietary: ${diets}. My Ingredients: ${ingredients}. Amount of servings: ${servings}. This is for ${meal}. Generate a recipe, cook information(servings, prep time, cook time, calories, nutritional information, tips), ${useAI > 0 ? 'ingredients list, and one recipe results image.' : 'and ingredients list.'} Start with the recipe title and add ! to the end of the recipe title. (Don't start with something like, "Here's the recipe based on the image provided.")`;
       }
-      console.log('useAI', useAI)
       console.log('prompt', prompt)
 
       const contents = [
