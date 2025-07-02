@@ -654,7 +654,19 @@ exports.getMyPostList = async (req, res) => {
         .json({ success: false, message: token });
     }
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] })
-    .populate('comment.userid', 'fullname avatar')
+    .populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      })
     .sort({_id: -1 })
     .lean();
     res.json({ success: true, myposts: message_board });
@@ -662,19 +674,33 @@ exports.getMyPostList = async (req, res) => {
 };
 
 exports.getPostList = async (req, res) => {
-  if (req.headers && req.headers.authorization) {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: token });
+  try {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ success: false, message: 'Missing token' });
     }
+
     const message_board = await MessageBoard.find({ status: 1 })
-    .populate('userid', 'fullname avatar bio cookBookName')
-    .populate('comment.userid', 'fullname avatar')
-    .sort({_id: -1 })
-    .lean();
+      .populate('userid', 'fullname avatar bio cookBookName')
+      .populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      })
+      .sort({ _id: -1 })
+      .lean();
+
     res.json({ success: true, posts: message_board });
+  } catch (error) {
+    console.error('getPostList error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -732,7 +758,19 @@ exports.getUserPostList = async (req, res) => {
     }
     const { id } = req.body;
     const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': id }] })
-    .populate('comment.userid', 'fullname avatar')
+    .populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      })
     .populate('userid', 'fullname avatar')
     .sort({_id: -1 })
     .lean();
@@ -807,8 +845,68 @@ exports.addComment = async (req, res) => {
         },
       },
       { new: true }
-    ).populate('comment.userid', 'fullname avatar');
+    ).populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      });
     res.json({ success: true, updatedPost, message: 'Commented this post.' });
+  }
+};
+
+exports.addReplyComment = async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Missing token' });
+    }
+
+    const { postId, commentId, replyComment } = req.body[0];
+
+    const post = await MessageBoard.findById(postId);
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+
+    const comment = post.comment.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: 'Comment not found' });
+    }
+
+    comment.replies.push({
+      userid: req.user._id,
+      comment: replyComment,
+    });
+
+    await post.save();
+
+    // repopulate after save
+    const updatedPost = await MessageBoard.findById(postId)
+      .populate({
+        path: 'comment',
+        populate: [
+          { path: 'userid', select: 'fullname avatar' },
+          { path: 'replies.userid', select: 'fullname avatar' }
+        ]
+      });
+
+    res.json({
+      success: true,
+      updatedPost,
+      message: 'Reply added to comment.',
+    });
+
+  } catch (err) {
+    console.error('Error adding reply:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -829,7 +927,19 @@ exports.deleteComment = async (req, res) => {
         }
       },
       { new: true }
-    ).populate('comment.userid', 'fullname avatar');
+    ).populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      });
     res.json({ success: true, updatedPost, message: 'Removed this comment.' });
   }
 };
@@ -847,7 +957,19 @@ exports.updateComment = async (req, res) => {
       { _id: id, 'comment._id': commentId },
       { $set: { 'comment.$.comment': comment } },
       { new: true }
-    ).populate('comment.userid', 'fullname avatar');
+    ).populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      });
     res.json({ success: true, updatedPost, message: 'Updated this comment.' });
   }
 };
@@ -865,7 +987,19 @@ exports.updateCommentLike = async (req, res) => {
       _id: id,
       status: 1,
       'comment._id': commentId
-    }).populate('comment.userid', 'fullname avatar');
+    }).populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      });
 
     if (!board) {
       return res.status(404).json({ success: false, message: 'MessageBoard or comment not found.' });
@@ -901,14 +1035,38 @@ exports.deletePost = async (req, res) => {
     }
     if(isMyPost) {
       const message_board = await MessageBoard.find({ $and: [{ 'status': 1 }, { 'userid': req.user._id }] })
-      .populate('comment.userid', 'fullname avatar')
+      .populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      })
       .sort({_id: -1 })
       .lean();
       res.json({ success: true, postList: message_board, message: 'Removed this post.' });
     }else{
       const message_board = await MessageBoard.find({ status: 1 })
       .populate('userid', 'fullname avatar bio')
-      .populate('comment.userid', 'fullname avatar')
+      .populate({
+        path: 'comment',
+        populate: [
+          {
+            path: 'userid',
+            select: 'fullname avatar'
+          },
+          {
+            path: 'replies.userid',
+            select: 'fullname avatar'
+          }
+        ]
+      })
       .sort({_id: -1 })
       .lean();
       res.json({ success: true, postList: message_board, message: 'Removed this post.' });

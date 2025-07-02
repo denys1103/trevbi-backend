@@ -53,6 +53,7 @@ const {
   updateCommentLike,
   deletePost,
   cookbookRequest,
+  addReplyComment,
   signOut,
 } = require('../controllers/user');
 const { isAuth } = require('../middlewares/auth');
@@ -96,6 +97,7 @@ router.post('/get-usercrews', isAuth, getUserCrewList);
 router.post('/get-usermembers', isAuth, getUserMemberList);
 router.post('/get-userdata', isAuth, getUserData);
 router.post('/add-comment', isAuth, addComment);
+router.post('/add-replycomment', isAuth, addReplyComment);
 router.post('/del-comment', isAuth, deleteComment);
 router.post('/update-comment', isAuth, updateComment);
 router.post('/update-commentlike', isAuth, updateCommentLike);

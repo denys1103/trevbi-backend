@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const commentReplySchema = new mongoose.Schema({
+  userid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  comment: {
+    type: String,
+    required: true,
+  },
+}, { _id: true });
+
 const commentSchema = new mongoose.Schema({
   userid: {
     type: mongoose.Schema.Types.ObjectId,
@@ -10,6 +22,7 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  replies: [commentReplySchema],
   like: { type: [] },
 }, { _id: true });
 
